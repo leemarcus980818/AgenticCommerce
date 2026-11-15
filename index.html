@@ -171,11 +171,14 @@
           <div class="flex items-start gap-3">
             <svg class="w-5 h-5 text-amber-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" /></svg>
             <div class="flex-1">
-              <p class="font-semibold text-amber-300 mb-1" id="cors-banner-title">Target Site Blocked Browser Proxy (WAF / Anti-Bot Protection)</p>
+              <p class="font-semibold text-amber-300 mb-1" id="cors-banner-title">Target Site Blocked Browser Relays (WAF / Anti-Bot Protection)</p>
               <p class="text-xs text-amber-200/85 leading-relaxed mb-3" id="cors-banner-desc">
-                Because AgentReady runs 100% client-side on GitHub Pages without a backend server, strict sites (like Cloudflare-protected stores) block public CORS proxies—which is actually a major signal that AI agents also face bot-wall friction!
+                All 3 public browser relays were blocked by the target origin's WAF / CDN rules (common on large enterprise domains like Apple, Nike, or Cloudflare-protected stores). Because autonomous AI agents also face these exact network-level blocks, you can either score this WAF block directly or paste the page source below.
               </p>
               <div class="flex flex-wrap gap-2">
+                <button onclick="generateWafBlockedReport()" class="px-3 py-1.5 rounded-lg bg-rose-500/20 hover:bg-rose-500/30 text-rose-200 border border-rose-500/40 text-xs font-semibold cursor-pointer">
+                  Score This WAF / Bot-Wall Block →
+                </button>
                 <button onclick="switchInputMode('html')" class="px-3 py-1.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 border border-amber-500/40 text-xs font-medium cursor-pointer">
                   Paste Page Source (Ctrl+U) →
                 </button>
@@ -189,7 +192,7 @@
 
         <p class="text-xs text-slate-500 flex items-center gap-1.5">
           <svg class="w-3.5 h-3.5 text-cyan-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" /></svg>
-          Uses public CORS relay (<code class="text-slate-400">allorigins.win</code>) for static GitHub Pages compatibility. For WAF-protected sites, use Tab 2 or Tab 3.
+          Uses a 3-tier static relay chain (<code class="text-slate-400">codetabs</code> → <code class="text-slate-400">allorigins</code> → <code class="text-slate-400">r.jina.ai</code>) for GitHub Pages compatibility.
         </p>
       </div>
 
@@ -544,42 +547,169 @@
     ];
 
     let currentReport = null;
+    let lastAttemptedUrl = '';
 
     // Initialize checklist UI on load
-    window.addEventListener('DOMContentLoaded', () => {
-      renderChecklistUI();
-    });
-
-    function renderChecklistUI() {
-      const pillarNames = [
-        '1. Bot Access & Renderability',
-        '2. Structured Data & Schema',
-        '3. Semantic DOM & Affordance',
-        '4. Checkout & Flow Predictability',
-        '5. Machine & Agent Protocols'
+    async function fetchHtmlWithRelayChain(targetUrl, btnElement) {
+      const relays = [
+        {
+          name: 'CodeTabs Relay',
+          fetchFn: async (signal) => {
+            const res = await fetch(`https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(targetUrl)}`, { signal });
+            if (!res.ok) throw new Error('CodeTabs HTTP ' + res.status);
+            return await res.text();
+          }
+        },
+        {
+          name: 'AllOrigins Relay',
+          fetchFn: async (signal) => {
+            const res = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(targetUrl)}`, { signal });
+            if (!res.ok) throw new Error('AllOrigins HTTP ' + res.status);
+            const data = await res.json();
+            return data?.contents || '';
+          }
+        },
+        {
+          name: 'Jina Edge Reader',
+          fetchFn: async (signal) => {
+            const res = await fetch(`https://r.jina.ai/${targetUrl}`, {
+              signal,
+              headers: { 'X-Return-Format': 'html' }
+            });
+            if (!res.ok) throw new Error('Jina HTTP ' + res.status);
+            return await res.text();
+          }
+        }
       ];
-      const container = document.getElementById('checklist-container');
-      container.innerHTML = pillarNames.map((pName, pIdx) => {
-        const items = CHECKLIST_ITEMS.filter(i => i.pillar === pIdx);
-        return `
-          <div class="rounded-xl bg-slate-950/80 border border-slate-800 p-4 flex flex-col gap-3">
-            <h4 class="text-xs font-mono font-semibold text-cyan-400 uppercase tracking-wider">${pName}</h4>
-            <div class="space-y-2.5">
-              ${items.map(item => `
-                <label class="flex items-start gap-2.5 cursor-pointer group">
-                  <input type="checkbox" id="${item.id}" ${item.checked ? 'checked' : ''} 
-                    onchange="toggleChecklistItem('${item.id}', this.checked)"
-                    class="mt-1 w-4 h-4 rounded border-slate-700 bg-slate-900 text-cyan-500 focus:ring-cyan-500/30 cursor-pointer" />
-                  <div class="text-xs">
-                    <div class="font-medium text-slate-200 group-hover:text-white transition-colors">${item.label}</div>
-                    <div class="text-slate-500 text-[11px] leading-snug mt-0.5">${item.desc}</div>
-                  </div>
-                </label>
-              `).join('')}
-            </div>
-          </div>
-        `;
-      }).join('');
+
+      for (let i = 0; i < relays.length; i++) {
+        const relay = relays[i];
+        btnElement.innerHTML = `<svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path></svg><span>Relay ${i + 1}/3 (${relay.name})...</span>`;
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), 7500);
+        try {
+          const html = await relay.fetchFn(controller.signal);
+          clearTimeout(timer);
+          if (html && html.trim().length > 200 && !/Access Denied|403 Forbidden|Attention Required! \| Cloudflare/i.test(html.slice(0, 1500))) {
+            return { html, relayName: relay.name };
+          }
+        } catch (e) {
+          clearTimeout(timer);
+        }
+      }
+      throw new Error('All browser relays blocked by target origin WAF/CORS rules.');
+    }
+
+    async function runUrlScan() {
+      let rawUrl = document.getElementById('url-input').value.trim();
+      const banner = document.getElementById('cors-fallback-banner');
+      banner.classList.add('hidden');
+
+      if (!rawUrl) {
+        showToast('Please enter a website URL or click an Instant Demo button.', 'warn');
+        return;
+      }
+      if (!/^https?:\/\//i.test(rawUrl)) {
+        rawUrl = 'https://' + rawUrl;
+      }
+      lastAttemptedUrl = rawUrl;
+
+      // Check if user entered one of the demo URLs directly
+      if (rawUrl.includes('soundcraft.example')) {
+        return loadDemoPreset('modern');
+      }
+      if (rawUrl.includes('legacy-retailer.example')) {
+        return loadDemoPreset('legacy');
+      }
+
+      const btn = document.getElementById('scan-url-btn');
+      const originalBtnHtml = btn.innerHTML;
+      btn.disabled = true;
+
+      try {
+        const { html, relayName } = await fetchHtmlWithRelayChain(rawUrl, btn);
+        const report = analyzeHtmlDocument(html, rawUrl, `Live Scan (${relayName})`);
+        renderDashboard(report);
+        showToast(`Successfully audited ${rawUrl} via ${relayName}`, 'success');
+
+      } catch (err) {
+        console.warn('Live URL scan relay chain blocked:', err);
+        banner.classList.remove('hidden');
+        document.getElementById('cors-banner-title').textContent = `Origin WAF / CDN Blocked Browser Relays for "${rawUrl}"`;
+        showToast('Target blocked all 3 browser relays — see fallback options below.', 'warn');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = originalBtnHtml;
+      }
+    }
+
+    function generateWafBlockedReport() {
+      const target = lastAttemptedUrl || document.getElementById('url-input').value.trim() || 'Blocked Target URL';
+      const report = {
+        target,
+        sourceType: 'Live Network / WAF Probe',
+        timestamp: new Date().toISOString(),
+        overallScore: 18,
+        pillars: [
+          {
+            title: 'Bot Access & Renderability',
+            score: 10,
+            checks: [
+              { status: 'fail', text: 'Origin WAF / CDN rejected unauthenticated proxy & headless fetch' },
+              { status: 'warn', text: 'Requires residential browser session or signed Web Bot Auth' }
+            ]
+          },
+          {
+            title: 'Structured Data & Entity Clarity',
+            score: 20,
+            checks: [
+              { status: 'warn', text: 'Inaccessible to lightweight HTTP crawlers without browser rendering' },
+              { status: 'warn', text: 'Paste page source (Ctrl+U) to inspect embedded JSON-LD directly' }
+            ]
+          },
+          {
+            title: 'Semantic DOM & Action Affordance',
+            score: 25,
+            checks: [
+              { status: 'warn', text: 'DOM tree gated behind edge bot-mitigation challenge' }
+            ]
+          },
+          {
+            title: 'Checkout & Flow Predictability',
+            score: 20,
+            checks: [
+              { status: 'fail', text: 'Automated agents face high session-termination risk at edge' }
+            ]
+          },
+          {
+            title: 'Machine Interfaces & Protocols',
+            score: 15,
+            checks: [
+              { status: 'fail', text: 'No unauthenticated /llms.txt or public agent gateway reachable' }
+            ]
+          }
+        ],
+        issues: [
+          {
+            severity: 'CRITICAL',
+            pillar: 'Bot Access & Renderability',
+            title: 'Edge WAF / CDN Blocks Lightweight AI Agent & Proxy Requests',
+            impact: 'Enterprise domains (like apple.com) aggressively filter datacenter and proxy user-agents at the CDN edge. While human browsers load the page normally, lightweight search/shopping agents fail at the network layer unless allowlisted.',
+            before: `# Edge CDN blocks non-browser User-Agents / CORS relays with HTTP 403 / timeout`,
+            after: `# Allow verified AI search & shopping user-agents in CDN WAF & robots.txt:\nUser-agent: OAI-SearchBot\nAllow: /\n\nUser-agent: ClaudeBot\nAllow: /\n\nUser-agent: PerplexityBot\nAllow: /`
+          },
+          {
+            severity: 'HIGH',
+            pillar: 'Machine Interfaces & Protocols',
+            title: 'Provide Unauthenticated /llms.txt & Public Catalog Feed',
+            impact: 'When primary HTML routes require strict anti-bot protection, publishing an open /llms.txt and read-only JSON catalog feed lets AI agents discover accurate product specs and pricing without triggering WAF rules.',
+            before: `# No public machine-readable catalog endpoint exposed`,
+            after: `# Host at https://yourdomain.com/llms.txt with open CORS headers:\nAccess-Control-Allow-Origin: *\nContent-Type: text/plain; charset=utf-8`
+          }
+        ]
+      };
+      renderDashboard(report);
+      showToast('Generated WAF Friction Report! Paste Ctrl+U HTML for full DOM inspection.', 'warn');
     }
 
     function toggleChecklistItem(id, state) {
