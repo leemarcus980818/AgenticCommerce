@@ -7,19 +7,6 @@
   <title>AgentReady - Agentic Commerce Readiness Evaluator</title>
   <!-- Development build. For production, compile Tailwind with the CLI or PostCSS. -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ['Inter', 'system-ui', 'sans-serif'],
-            mono: ['ui-monospace', 'SFMono-Regular', 'monospace']
-          }
-        }
-      }
-    };
-  </script>
   <style>
     [hidden] { display: none !important; }
     body {
@@ -78,14 +65,13 @@
 
     <!-- Input panel -->
     <section class="glass mb-10 rounded-2xl p-5 shadow-2xl shadow-black/40 sm:p-7" aria-label="Evaluation input">
-      <div role="tablist" aria-label="Evaluation input mode"
-           class="mb-6 flex flex-wrap gap-2 border-b border-slate-800 pb-4">
+      <div role="tablist" aria-label="Evaluation input mode" class="mb-6 flex flex-wrap gap-2 border-b border-slate-800 pb-4">
         <button id="tab-url" type="button" role="tab" data-tab="url" aria-controls="panel-url" aria-selected="true" tabindex="0"
-                class="tab-btn rounded-xl border border-cyan-500/40 bg-cyan-500/15 px-4 py-2.5 text-sm font-medium text-cyan-300">Live URL</button>
+                class="rounded-xl border px-4 py-2.5 text-sm font-medium">Live URL</button>
         <button id="tab-html" type="button" role="tab" data-tab="html" aria-controls="panel-html" aria-selected="false" tabindex="-1"
-                class="tab-btn rounded-xl border border-slate-800 bg-slate-900 px-4 py-2.5 text-sm font-medium text-slate-400 hover:text-slate-200">Paste source</button>
+                class="rounded-xl border px-4 py-2.5 text-sm font-medium">Paste source</button>
         <button id="tab-checklist" type="button" role="tab" data-tab="checklist" aria-controls="panel-checklist" aria-selected="false" tabindex="-1"
-                class="tab-btn rounded-xl border border-slate-800 bg-slate-900 px-4 py-2.5 text-sm font-medium text-slate-400 hover:text-slate-200">Self-audit</button>
+                class="rounded-xl border px-4 py-2.5 text-sm font-medium">Self-audit</button>
       </div>
 
       <!-- URL panel -->
@@ -156,8 +142,7 @@
               <svg class="h-full w-full -rotate-90" viewBox="0 0 120 120" aria-hidden="true">
                 <circle cx="60" cy="60" r="52" fill="none" stroke="#1e293b" stroke-width="10"></circle>
                 <circle id="score-ring" cx="60" cy="60" r="52" fill="none" stroke="#06b6d4" stroke-width="10"
-                        stroke-dasharray="326.73" stroke-dashoffset="326.73" stroke-linecap="round"
-                        style="transition: stroke-dashoffset 1s ease"></circle>
+                        stroke-linecap="round" style="transition: stroke-dashoffset 1s ease"></circle>
               </svg>
               <div class="absolute text-center">
                 <div id="overall-score-num" class="text-4xl font-extrabold text-white">—</div>
@@ -183,8 +168,8 @@
 
       <div>
         <div class="mb-4 flex items-center justify-between gap-3">
-          <h2 class="text-lg font-bold text-white">Five-pillar breakdown</h2>
-          <span class="font-mono text-xs text-slate-400">Score uses observed checks only</span>
+          <h2 class="text-lg font-bold text-white">Pillar breakdown</h2>
+          <span class="font-mono text-xs text-slate-400">Scores use observed checks only</span>
         </div>
         <div id="pillars-grid" class="grid gap-5 md:grid-cols-2 lg:grid-cols-3"></div>
       </div>
@@ -193,14 +178,14 @@
         <div class="mb-6 flex flex-wrap items-center justify-between gap-4">
           <div>
             <h2 class="text-lg font-bold text-white">Prioritized remediation roadmap</h2>
-            <p class="text-xs text-slate-400">Fixes are generated from the observed page. Replace any REPLACE_* placeholder with real values.</p>
+            <p class="text-xs text-slate-400">Fixes are generated from the analyzed page. Replace any REPLACE_* placeholder with real values.</p>
           </div>
-          <div class="flex flex-wrap gap-2" role="group" aria-label="Filter by severity">
-            <button type="button" data-filter="ALL" class="filter-btn rounded-lg border px-3 py-1.5 text-xs" aria-pressed="true">All</button>
-            <button type="button" data-filter="CRITICAL" class="filter-btn rounded-lg border px-3 py-1.5 text-xs" aria-pressed="false">Critical</button>
-            <button type="button" data-filter="HIGH" class="filter-btn rounded-lg border px-3 py-1.5 text-xs" aria-pressed="false">High</button>
-            <button type="button" data-filter="MEDIUM" class="filter-btn rounded-lg border px-3 py-1.5 text-xs" aria-pressed="false">Medium</button>
-            <button type="button" data-filter="LOW" class="filter-btn rounded-lg border px-3 py-1.5 text-xs" aria-pressed="false">Low</button>
+          <div id="filter-group" class="flex flex-wrap gap-2" role="group" aria-label="Filter by severity">
+            <button type="button" data-filter="ALL" class="filter-btn rounded-lg border px-3 py-1.5 text-xs">All</button>
+            <button type="button" data-filter="CRITICAL" class="filter-btn rounded-lg border px-3 py-1.5 text-xs">Critical</button>
+            <button type="button" data-filter="HIGH" class="filter-btn rounded-lg border px-3 py-1.5 text-xs">High</button>
+            <button type="button" data-filter="MEDIUM" class="filter-btn rounded-lg border px-3 py-1.5 text-xs">Medium</button>
+            <button type="button" data-filter="LOW" class="filter-btn rounded-lg border px-3 py-1.5 text-xs">Low</button>
           </div>
         </div>
         <div id="remediation-list" class="space-y-4"></div>
@@ -213,13 +198,13 @@
         <span class="font-mono text-xs uppercase tracking-widest text-cyan-400">Architecture Standard</span>
         <h2 class="mt-1 mb-3 text-2xl font-bold text-white sm:text-3xl">The 5-Level Agentic Commerce Maturity Model</h2>
         <p class="text-sm leading-relaxed text-slate-400 sm:text-base">
-          Each pillar is scored from its observed checks. Pillars with no observable evidence are excluded
-          rather than scored as zero or as a guess. Checkout cannot exceed Level 2 unless a purchase path was observed.
+          Each pillar is scored from its observed checks. Pillars with no observable evidence are shown as N/A
+          rather than scored as zero or as a guess. Without an observed purchase path, the result cannot exceed Level 2.
         </p>
       </div>
       <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
         <article class="glass rounded-xl border-t-2 border-t-rose-500 p-5"><span class="font-mono text-[11px] font-semibold text-rose-400">LEVEL 0 (0-24)</span><h3 class="mt-1 mb-2 font-bold text-white">Invisible / Blocked</h3><p class="text-xs leading-relaxed text-slate-400">Critical rendering, access, challenge, or semantic barriers prevent dependable agent use.</p></article>
-        <article class="glass rounded-xl border-t-2 border-t-amber-500 p-5"><span class="font-mono text-[11px] font-semibold text-amber-400">LEVEL 1 (25-49)</span><h3 class="mt-1 mb-2 font-bold text-white">Discoverable</h3><p class="text-xs leading-relaxed text-slate-400">Basic content can be found, but product and transaction signals remain ambiguous.</p></article>
+        <article class="glass rounded-xl border-t-2 border-t-amber-500 p-5"><span class="font-mono text-[11px] font-semibold text-amber-400">LEVEL 1 (25-49)</span><h3 class="mt-1 mb-2 font-bold text-white">Discoverable</h3><p class="text-xs leading-relaxed text-slate-400">Content can be found, but product and transaction signals remain ambiguous.</p></article>
         <article class="glass rounded-xl border-t-2 border-t-yellow-400 p-5"><span class="font-mono text-[11px] font-semibold text-yellow-300">LEVEL 2 (50-69)</span><h3 class="mt-1 mb-2 font-bold text-white">Machine-Parseable</h3><p class="text-xs leading-relaxed text-slate-400">Structured product information is readable, while action or checkout friction may remain.</p></article>
         <article class="glass rounded-xl border-t-2 border-t-cyan-400 p-5"><span class="font-mono text-[11px] font-semibold text-cyan-400">LEVEL 3 (70-89)</span><h3 class="mt-1 mb-2 font-bold text-white">DOM-Transactable</h3><p class="text-xs leading-relaxed text-slate-400">Semantic controls and a predictable guest purchase path support browser-based agents.</p></article>
         <article class="glass rounded-xl border-t-2 border-t-emerald-400 p-5"><span class="font-mono text-[11px] font-semibold text-emerald-400">LEVEL 4 (90-100)</span><h3 class="mt-1 mb-2 font-bold text-white">Autonomous-Native</h3><p class="text-xs leading-relaxed text-slate-400">Strong structured data plus explicit machine interfaces enable high-confidence agent workflows.</p></article>
@@ -238,7 +223,7 @@
   </main>
 
   <footer class="mt-12 border-t border-slate-800 py-6 text-center text-xs text-slate-400">
-    AgentReady: static client-side evaluator. Reports are evidence-based and list what could not be observed.
+    AgentReady: static client-side evaluator. Reports list what could not be observed.
   </footer>
 
   <script>
@@ -246,13 +231,13 @@
 
     /* ================= Configuration ================= */
     const CONFIG = {
-      // Optional server-side scanner that you operate. Contract:
+      // Optional scanner you operate. Contract:
       //   GET {endpoint}?url=<encoded target>  ->  JSON { "html": "...", "finalUrl": "...", "status": 200 }
-      // Leave empty to attempt direct browser fetching (works only for sites that allow cross-origin reads).
+      // Leave empty to fetch directly from the browser (works only where the target allows cross-origin reads).
       serverScanEndpoint: '',
       requestTimeoutMs: 15000,
-      maxHtmlLength: 5_000_000,
-      minHtmlLength: 30
+      minHtmlLength: 30,
+      maxHtmlLength: 5000000
     };
 
     /* ================= Model ================= */
@@ -263,6 +248,7 @@
       { key: 'checkout',   title: 'Checkout & Flow Predictability',   weight: 18 },
       { key: 'machine',    title: 'Machine Interfaces & Protocols',   weight: 10 }
     ];
+
     const STATUS_CREDIT = { pass: 1, warn: 0.5, fail: 0 };
     const SEVERITY_RANK = { CRITICAL: 0, HIGH: 1, MEDIUM: 2, LOW: 3 };
 
@@ -281,11 +267,12 @@
       fail:    { icon: '×', cls: 'text-rose-400',    label: 'Fail' },
       unknown: { icon: '?', cls: 'text-slate-400',   label: 'Unknown' }
     };
+
     const SEVERITY_STYLE = {
       CRITICAL: 'border-rose-500/40 bg-rose-500/15 text-rose-300',
-      HIGH:     'border-amber-500/40 bg-amber-500/15 text-amber-300',
-      MEDIUM:   'border-cyan-500/40 bg-cyan-500/15 text-cyan-300',
-      LOW:      'border-slate-600 bg-slate-800 text-slate-300'
+      HIGH: 'border-amber-500/40 bg-amber-500/15 text-amber-300',
+      MEDIUM: 'border-cyan-500/40 bg-cyan-500/15 text-cyan-300',
+      LOW: 'border-slate-600 bg-slate-800 text-slate-300'
     };
 
     /* ================= Patterns ================= */
@@ -300,10 +287,10 @@
       'script[src*="recaptcha"]', 'script[src*="turnstile"]',
       'iframe[src*="hcaptcha"]', 'iframe[src*="recaptcha"]',
       '[class*="g-recaptcha"]', '[class*="h-captcha"]', '[data-sitekey]'
-    ].join(',');
+    ].join(', ');
     const CHALLENGE_TEXT_RE = /verify you are human|attention required|checking your browser|request blocked|access denied/i;
 
-    /* ================= Checklist data (self-audit) ================= */
+    /* ================= Self-audit data ================= */
     const CHECKLIST_DATA = [
       ['c1',  'access',     'Server-rendered product content', 'Titles, prices and stock appear in initial HTML.', true],
       ['c2',  'access',     'Permissive crawler rules',        'Robots directives permit indexing and snippets.', true],
@@ -322,6 +309,7 @@
       ['c15', 'machine',    'Product feed, OpenAPI or MCP',    'A machine interface supports trusted integrations.', false]
     ];
 
+    /* ================= Demo page ================= */
     const DEMO_HTML = `<!DOCTYPE html><html lang="en"><head><title>AeroPulse Headphones</title><meta name="robots" content="index,follow"><meta property="og:title" content="AeroPulse Headphones"><link rel="alternate" type="text/plain" href="/llms.txt"><link rel="service-desc" href="/openapi.json"><script type="application/ld+json">{"@context":"https://schema.org","@type":"Product","name":"AeroPulse Headphones","sku":"AP-900","gtin13":"0194252012345","offers":{"@type":"Offer","price":"249.00","priceCurrency":"USD","availability":"https://schema.org/InStock","potentialAction":{"@type":"BuyAction","target":"/checkout?sku=AP-900"}}}<\/script></head><body><main><article><h1>AeroPulse Headphones</h1><p>$249.00 USD, in stock. Over-ear wireless headphones with 40-hour battery life, active noise cancellation and a foldable frame. Ships within one business day.</p><form action="/cart/add" method="post" aria-label="Configure and purchase"><label for="finish">Finish</label><select id="finish"><option>Black</option></select><button type="submit" aria-label="Add AeroPulse Headphones to cart">Add to cart</button><a href="/checkout/guest" role="button">Guest checkout</a><p>No account required. Free two-day shipping. Tax calculated at checkout.</p></form></article></main></body></html>`;
 
     /* ================= State ================= */
@@ -332,18 +320,23 @@
 
     /* ================= Utilities ================= */
     const $ = id => document.getElementById(id);
-    const esc = value => String(value ?? '').replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
+
+    const esc = value => String(value == null ? '' : value).replace(/[&<>"']/g, ch =>
+      ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
 
     class RetrievalError extends Error {
-      constructor(message) { super(message); this.name = 'RetrievalError'; }
+      constructor(message) {
+        super(message);
+        this.name = 'RetrievalError';
+      }
     }
 
-    function showToast(message, type = 'info') {
+    function showToast(message, type) {
       const el = document.createElement('div');
       const tone = type === 'success' ? 'border-emerald-500/40 text-emerald-200'
-                 : type === 'warn' ? 'border-amber-500/40 text-amber-200'
-                 : 'border-cyan-500/40 text-cyan-200';
-      el.className = `pointer-events-auto rounded-xl border bg-slate-900 px-4 py-3 text-xs font-medium shadow-xl ${tone}`;
+        : type === 'warn' ? 'border-amber-500/40 text-amber-200'
+        : 'border-cyan-500/40 text-cyan-200';
+      el.className = 'pointer-events-auto rounded-xl border bg-slate-900 px-4 py-3 text-xs font-medium shadow-xl ' + tone;
       el.textContent = message;
       $('toast-container').appendChild(el);
       setTimeout(() => el.remove(), 4000);
@@ -353,34 +346,42 @@
       try {
         await navigator.clipboard.writeText(text);
         return true;
-      } catch {
-        return false;
+      } catch (e) {
+        const area = document.createElement('textarea');
+        area.value = text;
+        area.style.position = 'fixed';
+        area.style.opacity = '0';
+        document.body.appendChild(area);
+        area.select();
+        const ok = document.execCommand('copy');
+        area.remove();
+        return ok;
       }
     }
 
     function normalizeUrl(input) {
       let value = String(input || '').trim();
       if (!value) throw new Error('Enter a website address.');
-      if (!/^https?:\/\//i.test(value)) value = `https://${value}`;
+      if (!/^https?:\/\//i.test(value)) value = 'https://' + value;
       let url;
-      try { url = new URL(value); } catch { throw new Error('That is not a valid address.'); }
-      if (!['http:', 'https:'].includes(url.protocol)) throw new Error('Only http and https addresses are supported.');
+      try { url = new URL(value); } catch (e) { throw new Error('That is not a valid address.'); }
+      if (url.protocol !== 'http:' && url.protocol !== 'https:') throw new Error('Only http and https addresses are supported.');
       if (!url.hostname.includes('.') && url.hostname !== 'localhost') throw new Error('Enter a complete hostname, such as example.com.');
       url.hash = '';
       return url.href;
     }
 
     /* ================= Retrieval ================= */
-    async function timedRequest(url, options = {}) {
+    async function requestText(url, options) {
       const controller = new AbortController();
       const timer = setTimeout(() => controller.abort(), CONFIG.requestTimeoutMs);
       try {
-        const res = await fetch(url, { ...options, signal: controller.signal, redirect: 'follow', credentials: 'omit' });
+        const res = await fetch(url, Object.assign({}, options || {}, { signal: controller.signal, credentials: 'omit' }));
         const body = await res.text();
-        return { status: res.status, body };
+        return { status: res.status, body: body };
       } catch (error) {
         if (error.name === 'AbortError') throw new RetrievalError('The request timed out.');
-        if (error instanceof TypeError) throw new RetrievalError('The request was blocked or the host is unreachable. Most sites do not allow direct browser access (CORS).');
+        if (error instanceof TypeError) throw new RetrievalError('The browser could not read this site directly. Most sites block cross-origin requests (CORS). Paste the page source, or configure a server scanner.');
         throw error;
       } finally {
         clearTimeout(timer);
@@ -394,44 +395,47 @@
 
     async function retrieve(url) {
       if (CONFIG.serverScanEndpoint) {
-        const { status, body } = await timedRequest(
-          `${CONFIG.serverScanEndpoint}?url=${encodeURIComponent(url)}`,
-          { headers: { Accept: 'application/json' } }
-        );
-        if (status !== 200) throw new RetrievalError(`The scanner returned HTTP ${status}.`);
+        const endpoint = CONFIG.serverScanEndpoint + '?url=' + encodeURIComponent(url);
+        const res = await requestText(endpoint, { headers: { Accept: 'application/json' } });
+        if (res.status !== 200) throw new RetrievalError('The scanner returned HTTP ' + res.status + '.');
         let data;
-        try { data = JSON.parse(body); } catch { throw new RetrievalError('The scanner response was not valid JSON.'); }
+        try { data = JSON.parse(res.body); } catch (e) { throw new RetrievalError('The scanner response was not valid JSON.'); }
         if (typeof data.html !== 'string') throw new RetrievalError('The scanner response did not include HTML.');
-        if (data.status >= 400) throw new RetrievalError(`The target responded with HTTP ${data.status}, so the response is not the product page.`);
+        if (data.status >= 400) throw new RetrievalError('The target responded with HTTP ' + data.status + ', so this is not a readable product page.');
         assertHtmlSize(data.html);
         return { html: data.html, finalUrl: data.finalUrl || url, method: 'Server scanner' };
       }
 
-      const { status, body } = await timedRequest(url);
-      if (status >= 400) throw new RetrievalError(`The site responded with HTTP ${status}.`);
-      assertHtmlSize(body);
-      return { html: body, finalUrl: url, method: 'Direct browser fetch' };
+      const res = await requestText(url, { redirect: 'follow' });
+      if (res.status >= 400) throw new RetrievalError('The site responded with HTTP ' + res.status + '.');
+      assertHtmlSize(res.body);
+      return { html: res.body, finalUrl: url, method: 'Direct browser fetch' };
     }
 
-    /* ================= Schema helpers ================= */
-    function collectSchemaObjects(value, out = []) {
-      if (Array.isArray(value)) value.forEach(v => collectSchemaObjects(v, out));
-      else if (value && typeof value === 'object') {
+    /* ================= Structured data helpers ================= */
+    function collectSchemaObjects(value, out) {
+      if (Array.isArray(value)) {
+        value.forEach(v => collectSchemaObjects(v, out));
+      } else if (value && typeof value === 'object') {
         if (value['@type']) out.push(value);
-        Object.values(value).forEach(v => collectSchemaObjects(v, out));
+        Object.keys(value).forEach(k => collectSchemaObjects(value[k], out));
       }
       return out;
     }
 
     function collectJsonLd(doc) {
       const objects = [];
-      let blocks = 0, parseErrors = 0;
+      let blocks = 0;
+      let parseErrors = 0;
       doc.querySelectorAll('script[type="application/ld+json"]').forEach(script => {
         blocks++;
-        try { collectSchemaObjects(JSON.parse(script.textContent), objects); }
-        catch { parseErrors++; }
+        try {
+          collectSchemaObjects(JSON.parse(script.textContent), objects);
+        } catch (e) {
+          parseErrors++;
+        }
       });
-      return { objects, blocks, parseErrors };
+      return { objects: objects, blocks: blocks, parseErrors: parseErrors };
     }
 
     function typed(objects, name) {
@@ -445,16 +449,19 @@
     /* ================= DOM helpers ================= */
     function visibleText(doc) {
       const clone = doc.body.cloneNode(true);
-      clone.querySelectorAll('script,style,noscript,template').forEach(n => n.remove());
+      clone.querySelectorAll('script, style, noscript, template').forEach(n => n.remove());
       return clone.textContent.replace(/\s+/g, ' ').trim();
     }
 
     function accessibleName(el, doc) {
-      const aria = el.getAttribute('aria-label');
-      if (aria && aria.trim()) return aria.trim();
+      const aria = (el.getAttribute('aria-label') || '').trim();
+      if (aria) return aria;
       const labelledBy = el.getAttribute('aria-labelledby');
       if (labelledBy) {
-        const text = labelledBy.split(/\s+/).map(id => doc.getElementById(id)?.textContent || '').join(' ').trim();
+        const text = labelledBy.split(/\s+/).map(id => {
+          const node = doc.getElementById(id);
+          return node ? node.textContent : '';
+        }).join(' ').trim();
         if (text) return text;
       }
       if (el.tagName === 'INPUT' && ['submit', 'button', 'reset'].includes(el.type)) return (el.value || '').trim() || 'submit';
@@ -467,15 +474,17 @@
     }
 
     function hasLabel(el, doc) {
-      if ((el.getAttribute('aria-label') || '').trim() || el.getAttribute('aria-labelledby') || el.getAttribute('title')) return true;
-      if (el.id && doc.querySelector(`label[for="${CSS.escape(el.id)}"]`)) return true;
+      if ((el.getAttribute('aria-label') || '').trim()) return true;
+      if (el.getAttribute('aria-labelledby') || el.getAttribute('title')) return true;
+      if (el.id && doc.querySelector('label[for="' + el.id.replace(/"/g, '\\"') + '"]')) return true;
       return !!el.closest('label');
     }
 
-    function snippet(el, max = 220) {
+    function snippet(el, max) {
       if (!el) return '(element not found)';
+      const limit = max || 220;
       const html = el.outerHTML.replace(/\s+/g, ' ');
-      return html.length > max ? html.slice(0, max) + '…' : html;
+      return html.length > limit ? html.slice(0, limit) + '…' : html;
     }
 
     /* ================= Fix generators ================= */
@@ -483,7 +492,7 @@
       const data = {
         '@context': 'https://schema.org',
         '@type': 'Product',
-        name,
+        name: name,
         sku: 'REPLACE_SKU',
         gtin13: 'REPLACE_GTIN13',
         offers: {
@@ -495,30 +504,32 @@
           potentialAction: { '@type': 'BuyAction', target: 'REPLACE_CHECKOUT_URL' }
         }
       };
-      return `<script type="application/ld+json">\n${JSON.stringify(data, null, 2)}\n</script>`;
+      return '<script type="application/ld+json">\n' + JSON.stringify(data, null, 2) + '\n<\/script>';
     }
 
-    function issue(severity, title, impact, before, after) {
-      return { severity, title, impact, before, after };
+    function issue(severity, title, impact, observed, fix) {
+      return { severity: severity, title: title, impact: impact, before: observed, after: fix };
+    }
+
+    function check(id, label, status, weight, detail, issueObj) {
+      return { id: id, label: label, status: status, weight: weight, detail: detail, issue: issueObj || null };
     }
 
     /* ================= Scoring ================= */
-    function check(id, label, status, weight, detail, issueObj = null) {
-      return { id, label, status, weight, detail, issue: issueObj };
-    }
-
     function scorePillar(checks) {
       const observed = checks.filter(c => c.status !== 'unknown' && c.weight > 0);
-      const totalWeight = observed.reduce((sum, c) => sum + c.weight, 0);
-      if (!totalWeight) return { score: null, observed: 0, total: checks.length };
+      const total = observed.reduce((sum, c) => sum + c.weight, 0);
+      if (!total) return { score: null, observed: 0 };
       const earned = observed.reduce((sum, c) => sum + c.weight * STATUS_CREDIT[c.status], 0);
-      return { score: Math.round((earned / totalWeight) * 100), observed: observed.length, total: checks.length };
+      return { score: Math.round(earned / total * 100), observed: observed.length };
     }
 
     function maturityFor(report) {
-      if (report.overall === null) return { ...TIERS.none, notes: ['No check could be observed.'] };
-
-      let level = report.overall >= 90 ? 4 : report.overall >= 70 ? 3 : report.overall >= 50 ? 2 : report.overall >= 25 ? 1 : 0;
+      if (report.overall === null) {
+        return Object.assign({}, TIERS.none, { notes: ['No check could be observed.'] });
+      }
+      const o = report.overall;
+      let level = o >= 90 ? 4 : o >= 70 ? 3 : o >= 50 ? 2 : o >= 25 ? 1 : 0;
       const notes = [];
       const machine = report.pillars.find(p => p.key === 'machine');
 
@@ -530,15 +541,19 @@
         level = 3;
         notes.push('Capped at Level 3: machine interfaces are not sufficiently evidenced.');
       }
-      if (report.coverage < 60) notes.push(`Low confidence: only ${report.coverage}% of the model's weight could be observed.`);
-      if (report.mode === 'checklist') notes.push('Self-reported: items were not verified against the live site.');
-      return { ...TIERS[level], notes };
+      if (report.coverage < 60) {
+        notes.push('Low confidence: only ' + report.coverage + '% of the model weight could be observed.');
+      }
+      if (report.mode === 'checklist') {
+        notes.push('Self-reported: items were not verified against a live site.');
+      }
+      return Object.assign({}, TIERS[level], { notes: notes });
     }
 
-    function finalizeReport(base, checksByKey) {
+    function finalizeReport(base, byKey) {
       const pillars = PILLARS.map(p => {
-        const checks = checksByKey[p.key];
-        return { ...p, checks, ...scorePillar(checks) };
+        const checks = byKey[p.key];
+        return Object.assign({}, p, { checks: checks }, scorePillar(checks));
       });
       const scored = pillars.filter(p => p.score !== null);
       const totalWeight = PILLARS.reduce((s, p) => s + p.weight, 0);
@@ -546,14 +561,21 @@
       const overall = observedWeight
         ? Math.round(scored.reduce((s, p) => s + p.score * p.weight, 0) / observedWeight)
         : null;
-      const coverage = Math.round((observedWeight / totalWeight) * 100);
-      const issues = pillars
-        .flatMap(p => p.checks
-          .filter(c => c.issue && (c.status === 'fail' || c.status === 'warn'))
-          .map(c => ({ ...c.issue, pillar: p.title, checkId: c.id })))
-        .sort((a, b) => SEVERITY_RANK[a.severity] - SEVERITY_RANK[b.severity]);
 
-      const report = { ...base, pillars, overall, coverage, issues };
+      const issues = [];
+      pillars.forEach(p => p.checks.forEach(c => {
+        if (c.issue && (c.status === 'fail' || c.status === 'warn')) {
+          issues.push(Object.assign({}, c.issue, { pillar: p.title, checkId: c.id }));
+        }
+      }));
+      issues.sort((a, b) => SEVERITY_RANK[a.severity] - SEVERITY_RANK[b.severity]);
+
+      const report = Object.assign({}, base, {
+        pillars: pillars,
+        overall: overall,
+        coverage: Math.round(observedWeight / totalWeight * 100),
+        issues: issues
+      });
       report.maturity = maturityFor(report);
       return report;
     }
@@ -563,96 +585,98 @@
       const doc = new DOMParser().parseFromString(html, 'text/html');
       const text = visibleText(doc);
       const schema = collectJsonLd(doc);
-      const products = typed(schema.objects, 'Product');
-      const offers = [...typed(schema.objects, 'Offer'), ...typed(schema.objects, 'AggregateOffer')];
-      const product = products[0] || null;
-      const offer = offers.find(o => o.price != null) || offers[0] || null;
+      const product = typed(schema.objects, 'Product')[0] || null;
+      const offers = typed(schema.objects, 'Offer').concat(typed(schema.objects, 'AggregateOffer'));
+      const offer = offers.find(o => o.price !== undefined) || offers[0] || null;
       const buyAction = typed(schema.objects, 'BuyAction')[0] || null;
 
       const h1 = doc.querySelector('h1');
-      const productName = product?.name || h1?.textContent.trim() || 'REPLACE_PRODUCT_NAME';
-      const detectedPrice = (text.match(PRICE_RE) || [])[0] || '';
-      const priceValue = offer?.price ?? (detectedPrice ? detectedPrice.replace(/[^\d.]/g, '') : '');
-      const currency = offer?.priceCurrency || '';
+      const productName = (product && product.name) || (h1 && h1.textContent.trim()) || 'REPLACE_PRODUCT_NAME';
+      const detectedPrice = (text.match(PRICE_RE) || [''])[0];
+      const priceValue = offer && offer.price !== undefined ? String(offer.price) : detectedPrice.replace(/[^\d.]/g, '');
+      const currency = offer && offer.priceCurrency ? String(offer.priceCurrency) : '';
 
       /* Pillar 1: Bot access */
-      const rootEl = doc.querySelector('#root,#app,#__next');
+      const rootEl = doc.querySelector('#root, #app, #__next');
       const rootShell = !!rootEl && text.length < 180;
-      const robots = (doc.querySelector('meta[name="robots"]')?.content || '').toLowerCase();
-      const restrictiveRobots = /\bnoindex\b|\bnone\b|\bnoai\b/.test(robots);
-      const challengeWidget = doc.querySelector(CHALLENGE_SELECTOR);
-      const challengeWidgetCount = doc.querySelectorAll(CHALLENGE_SELECTOR).length;
+      const robotsMeta = doc.querySelector('meta[name="robots"]');
+      const robots = (robotsMeta ? robotsMeta.getAttribute('content') || '' : '').toLowerCase();
+      const restrictive = /\bnoindex\b|\bnone\b|\bnoai\b/.test(robots);
+      const widgetCount = doc.querySelectorAll(CHALLENGE_SELECTOR).length;
       const challengePage = CHALLENGE_TEXT_RE.test(text) && text.length < 800;
 
       const access = [
         check('renderable', 'Readable content in initial HTML',
           text.length >= 300 ? 'pass' : text.length >= 100 ? 'warn' : 'fail', 3,
-          `${text.length} visible characters${rootShell ? ' (empty application shell detected)' : ''}`,
+          text.length + ' visible characters' + (rootShell ? ' (empty application shell detected)' : ''),
           text.length < 100 ? issue('CRITICAL', 'Render product content in initial HTML',
             'Crawlers and agents that do not run JavaScript receive an empty shell.',
             snippet(rootEl || doc.body),
-            `<main>\n  <h1>${productName}</h1>\n  <p>${priceValue || 'REPLACE_PRICE'} ${currency || 'REPLACE_CURRENCY'}</p>\n</main>`) : null),
+            '<main>\n  <h1>' + productName + '</h1>\n  <p>' + (priceValue || 'REPLACE_PRICE') + ' ' + (currency || 'REPLACE_CURRENCY') + '</p>\n</main>') : null),
         check('robots', 'Robots directives allow indexing',
-          restrictiveRobots ? 'fail' : 'pass', 2,
-          robots ? `meta robots: "${robots}"` : 'No robots meta tag (defaults to indexable)',
-          restrictiveRobots ? issue('HIGH', 'Remove restrictive robots directive from product pages',
+          restrictive ? 'fail' : 'pass', 2,
+          robotsMeta ? 'meta robots: "' + robots + '"' : 'No robots meta tag (defaults to indexable)',
+          restrictive ? issue('HIGH', 'Remove restrictive robots directive from product pages',
             'A noindex directive keeps search and shopping agents from listing this product.',
-            `<meta name="robots" content="${robots}">`,
+            '<meta name="robots" content="' + robots + '">',
             '<meta name="robots" content="index,follow">') : null),
         check('challenge', 'No challenge gate on the page',
-          challengePage ? 'fail' : challengeWidgetCount ? 'warn' : 'pass', 3,
+          challengePage ? 'fail' : widgetCount ? 'warn' : 'pass', 3,
           challengePage ? 'Interstitial challenge text detected'
-            : challengeWidgetCount ? `${challengeWidgetCount} CAPTCHA or challenge widget(s) present`
+            : widgetCount ? widgetCount + ' CAPTCHA or challenge widget(s) present'
             : 'No challenge markup detected',
           challengePage ? issue('CRITICAL', 'Exempt product pages from bot challenges',
             'A challenge page blocks automated access to the product content itself.',
             'Challenge interstitial served to automated clients',
-            'Serve product content without a challenge to verified crawlers, and reserve challenges for abusive traffic.')
-          : challengeWidgetCount ? issue('MEDIUM', 'Review challenge widgets on this page',
+            'Serve product content without a challenge to verified crawlers. Reserve challenges for abusive traffic.')
+          : widgetCount ? issue('MEDIUM', 'Keep visual challenges off the product page',
             'Visual puzzles interrupt autonomous checkout. Prefer passive risk scoring on purchase paths.',
-            snippet(challengeWidget),
+            snippet(doc.querySelector(CHALLENGE_SELECTOR)),
             'Use passive bot management on checkout, and keep visual CAPTCHAs off the purchase path.') : null),
         check('js', 'JavaScript-rendered content', 'unknown', 0,
-          'Only the supplied HTML was evaluated. Content added by scripts after load was not observed. Use a rendering scanner for that.')
+          'Only the supplied HTML was analyzed. Content added by scripts after load was not observed.')
       ];
 
       /* Pillar 2: Structured data */
-      const productMicrodata = doc.querySelectorAll('[itemtype*="schema.org/Product"]').length;
-      const offerComplete = !!(offer && offer.price != null && offer.priceCurrency);
-      const identifierPresent = hasIdentifier(product) || hasIdentifier(offer);
+      const microdata = doc.querySelectorAll('[itemtype*="schema.org/Product"]').length;
+      const offerComplete = !!(offer && offer.price !== undefined && offer.priceCurrency);
+      const identifier = hasIdentifier(product) || hasIdentifier(offer);
       const hasOg = !!doc.querySelector('meta[property="og:title"]');
 
       const structured = [
         check('product', 'Product entity declared',
-          product || productMicrodata ? 'pass' : 'fail', 4,
-          product ? `Product JSON-LD: "${product.name || 'unnamed'}"`
-            : productMicrodata ? `${productMicrodata} Product microdata element(s)`
+          product || microdata ? 'pass' : 'fail', 4,
+          product ? 'Product JSON-LD: "' + (product.name || 'unnamed') + '"'
+            : microdata ? microdata + ' Product microdata element(s)'
             : 'No Product JSON-LD or microdata',
-          product || productMicrodata ? null : issue('CRITICAL', 'Add Product JSON-LD',
+          product || microdata ? null : issue('CRITICAL', 'Add Product JSON-LD',
             'Without structured data, agents infer product identity and price from unstructured text.',
-            snippet(h1), productJsonLd(productName, priceValue, currency))),
+            snippet(h1),
+            productJsonLd(productName, priceValue, currency))),
         check('offer', 'Price and currency in Offer',
           offerComplete ? 'pass' : offer ? 'warn' : 'fail', 4,
-          offer ? `price ${offer.price ?? 'missing'}, currency ${offer.priceCurrency || 'missing'}`
+          offer ? 'price ' + (offer.price !== undefined ? offer.price : 'missing') + ', currency ' + (offer.priceCurrency || 'missing')
             : 'No Offer object found',
           offerComplete ? null : issue(offer ? 'HIGH' : 'CRITICAL',
             offer ? 'Add priceCurrency to Offer' : 'Add an Offer with price and currency',
             'Agents compare prices by value and currency. Missing values force guessing.',
-            `<!-- visible price: ${detectedPrice || 'not found'} -->`,
+            '<!-- visible price: ' + (detectedPrice || 'not found') + ' -->',
             productJsonLd(productName, priceValue, currency))),
         check('availability', 'Availability declared',
           !offer ? 'unknown' : offer.availability ? 'pass' : 'warn', 2,
-          !offer ? 'Requires an Offer'
-            : offer.availability ? `availability: ${offer.availability}`
+          !offer ? 'Requires an Offer object'
+            : offer.availability ? 'availability: ' + offer.availability
             : 'No availability in Offer',
           offer && !offer.availability ? issue('HIGH', 'Declare availability in Offer',
             'Stock state is a key purchase signal.',
             '"offers": { "@type": "Offer", ... }',
             '"availability": "https://schema.org/InStock"  // use the actual state') : null),
         check('identifier', 'GTIN, SKU or MPN declared',
-          identifierPresent ? 'pass' : product ? 'warn' : 'unknown', 2,
-          identifierPresent ? 'Product identifier present' : product ? 'No gtin, sku or mpn property' : 'Requires a Product entity',
-          product && !identifierPresent ? issue('MEDIUM', 'Add a GTIN, SKU or MPN',
+          identifier ? 'pass' : product ? 'warn' : 'unknown', 2,
+          identifier ? 'Product identifier present'
+            : product ? 'No gtin, sku or mpn property'
+            : 'Requires a Product entity',
+          product && !identifier ? issue('MEDIUM', 'Add a GTIN, SKU or MPN',
             'Identifiers let agents match your listing to the correct product across sites.',
             '"@type": "Product"',
             '"sku": "REPLACE_SKU",\n"gtin13": "REPLACE_GTIN13"') : null),
@@ -660,34 +684,35 @@
           hasOg ? 'og:title present' : 'og:title missing',
           hasOg ? null : issue('LOW', 'Add an Open Graph title',
             'Preview and link-understanding systems use this title.',
-            '(no og:title)', `<meta property="og:title" content="${productName}">`)),
+            '(no og:title)',
+            '<meta property="og:title" content="' + productName + '">')),
         check('jsonld', 'JSON-LD parses cleanly',
           schema.blocks === 0 ? 'unknown' : schema.parseErrors ? 'warn' : 'pass', 1,
           schema.blocks === 0 ? 'No JSON-LD blocks found'
-            : schema.parseErrors ? `${schema.parseErrors} of ${schema.blocks} JSON-LD block(s) failed to parse`
-            : `All ${schema.blocks} JSON-LD block(s) parsed`,
+            : schema.parseErrors ? schema.parseErrors + ' of ' + schema.blocks + ' JSON-LD block(s) failed to parse'
+            : 'All ' + schema.blocks + ' JSON-LD block(s) parsed',
           schema.parseErrors ? issue('LOW', 'Fix invalid JSON-LD',
             'Parsers ignore malformed blocks, so their data is lost.',
             'script type="application/ld+json" with a syntax error',
-            'Validate with a JSON linter and the Schema.org validator.') : null)
+            'Validate with a JSON linter and the schema.org validator.') : null)
       ];
 
       /* Pillar 3: Semantic DOM */
       const NON_INTERACTIVE = ['A', 'BUTTON', 'INPUT', 'SELECT', 'TEXTAREA', 'LABEL', 'OPTION'];
-      const onclickEls = [...doc.querySelectorAll('[onclick]')].filter(el => !NON_INTERACTIVE.includes(el.tagName));
-      const fakeButtons = [...doc.querySelectorAll('[role="button"]')]
-        .filter(el => !['BUTTON', 'A', 'INPUT'].includes(el.tagName) && !el.hasAttribute('tabindex'));
-      const nonSemantic = [...new Set([...onclickEls, ...fakeButtons])];
+      const onclickEls = Array.from(doc.querySelectorAll('[onclick]')).filter(el => NON_INTERACTIVE.indexOf(el.tagName) === -1);
+      const fakeButtons = Array.from(doc.querySelectorAll('[role="button"]'))
+        .filter(el => ['BUTTON', 'A', 'INPUT'].indexOf(el.tagName) === -1 && !el.hasAttribute('tabindex'));
+      const nonSemantic = onclickEls.concat(fakeButtons.filter(el => onclickEls.indexOf(el) === -1));
 
-      const controls = [...doc.querySelectorAll(
-        'button, input[type="submit"], input[type="button"], input[type="image"], [role="button"]')];
+      const controls = Array.from(doc.querySelectorAll(
+        'button, input[type="submit"], input[type="button"], input[type="image"], [role="button"]'));
       const unnamedControls = controls.filter(el => !accessibleName(el, doc));
 
-      const fields = [...doc.querySelectorAll(
-        'input:not([type="hidden"]):not([type="submit"]):not([type="button"]):not([type="image"]):not([type="reset"]), select, textarea')];
+      const fields = Array.from(doc.querySelectorAll(
+        'input:not([type="hidden"]):not([type="submit"]):not([type="button"]):not([type="image"]):not([type="reset"]), select, textarea'));
       const unlabeledFields = fields.filter(el => !hasLabel(el, doc));
 
-      const anchors = [...doc.querySelectorAll('a[href]')];
+      const anchors = Array.from(doc.querySelectorAll('a[href]'));
       const vagueLinks = anchors.filter(a => VAGUE_LINK_RE.test(a.textContent.trim()) && !a.getAttribute('aria-label'));
       const unnamedLinks = anchors.filter(a => !accessibleName(a, doc));
 
@@ -695,7 +720,7 @@
         check('nonsemantic', 'Interactive elements use native controls',
           nonSemantic.length === 0 ? 'pass' : nonSemantic.length <= 2 ? 'warn' : 'fail', 4,
           nonSemantic.length
-            ? `${nonSemantic.length} non-semantic clickable element(s), first: ${snippet(nonSemantic[0], 90)}`
+            ? nonSemantic.length + ' non-semantic clickable element(s), first: ' + snippet(nonSemantic[0], 90)
             : 'No onclick or role="button" on non-interactive tags',
           nonSemantic.length ? issue(nonSemantic.length > 2 ? 'HIGH' : 'MEDIUM',
             'Replace clickable non-semantic elements with buttons',
@@ -705,7 +730,7 @@
         check('names', 'Controls have accessible names',
           controls.length === 0 ? 'unknown' : unnamedControls.length ? 'warn' : 'pass', 3,
           controls.length === 0 ? 'No buttons found'
-            : `${controls.length - unnamedControls.length} of ${controls.length} controls named`,
+            : (controls.length - unnamedControls.length) + ' of ' + controls.length + ' controls named',
           unnamedControls.length ? issue('HIGH', 'Give unlabeled controls accessible names',
             'Icon-only or empty controls cannot be identified by agents.',
             snippet(unnamedControls[0]),
@@ -713,7 +738,7 @@
         check('fields', 'Form fields have labels',
           fields.length === 0 ? 'unknown' : unlabeledFields.length ? 'warn' : 'pass', 3,
           fields.length === 0 ? 'No form fields found'
-            : `${fields.length - unlabeledFields.length} of ${fields.length} fields labeled`,
+            : (fields.length - unlabeledFields.length) + ' of ' + fields.length + ' fields labeled',
           unlabeledFields.length ? issue('HIGH', 'Label form fields',
             'Unlabeled inputs force agents to guess what a field expects, such as size or quantity.',
             snippet(unlabeledFields[0]),
@@ -722,7 +747,7 @@
           anchors.length === 0 ? 'unknown' : (vagueLinks.length || unnamedLinks.length) ? 'warn' : 'pass', 2,
           anchors.length === 0 ? 'No links found'
             : (vagueLinks.length || unnamedLinks.length)
-              ? `${vagueLinks.length} vague and ${unnamedLinks.length} unnamed link(s)`
+              ? vagueLinks.length + ' vague and ' + unnamedLinks.length + ' unnamed link(s)'
               : 'Link text is descriptive',
           (vagueLinks.length || unnamedLinks.length) ? issue('LOW', 'Use descriptive link text',
             'Labels such as "click here" do not tell an agent where the link goes.',
@@ -730,15 +755,15 @@
             '<a href="/checkout/guest">Continue as guest</a>') : null)
       ];
 
-      /* Pillar 4: Checkout (only evaluated when a purchase control exists) */
-      const purchaseEls = [...controls, ...anchors].filter(el => PURCHASE_RE.test(accessibleName(el, doc)));
-      const cartForms = [...doc.querySelectorAll('form[action]')]
+      /* Pillar 4: Checkout (evaluated only when a purchase control exists) */
+      const purchaseEls = controls.concat(anchors).filter(el => PURCHASE_RE.test(accessibleName(el, doc)));
+      const cartForms = Array.from(doc.querySelectorAll('form[action]'))
         .filter(f => /cart|checkout|basket/i.test(f.getAttribute('action')));
       const purchaseObserved = purchaseEls.length > 0 || cartForms.length > 0;
       const guestFound = GUEST_RE.test(text);
       const forcedFound = FORCED_RE.test(text);
       const costFound = COST_RE.test(text);
-      const UNOBSERVED = 'No add-to-cart or buy control was found on this page. Checkout needs a product → cart → checkout journey scan.';
+      const UNOBSERVED = 'No add-to-cart or buy control was found on this page. Checkout needs a product, cart, and checkout journey scan.';
 
       const checkout = purchaseObserved ? [
         check('guest', 'Guest purchase path signalled',
@@ -771,24 +796,25 @@
       ];
 
       /* Pillar 5: Machine interfaces */
-      const llmsDeclared = !!doc.querySelector('link[href*="llms.txt"], a[href$="llms.txt"]');
+      const llmsLinked = !!doc.querySelector('link[href*="llms.txt"], a[href*="llms.txt"]');
       const buyTarget = buyAction
         ? (typeof buyAction.target === 'string' ? buyAction.target
-          : buyAction.target?.urlTemplate || buyAction.target?.url || '(object target)')
+          : (buyAction.target && (buyAction.target.urlTemplate || buyAction.target.url)) || '(object target)')
         : '';
-      const machineSignal = doc.querySelector(
-        'link[rel~="service-desc"], link[rel~="api-catalog"], link[rel~="describedby"][type*="json"], ' +
-        'a[href*="openapi"], a[href*="swagger"], link[href*="openapi"], ' +
-        'link[type="application/feed+json"], link[type="application/rss+xml"], link[type="application/atom+xml"]');
+      const machineSignal = doc.querySelector([
+        'link[rel~="service-desc"]', 'link[rel~="api-catalog"]',
+        'a[href*="openapi"]', 'link[href*="openapi"]', 'a[href*="swagger"]',
+        'link[type="application/feed+json"]', 'link[type="application/rss+xml"]', 'link[type="application/atom+xml"]'
+      ].join(', '));
 
       const machine = [
         check('llms', 'llms.txt declared',
-          llmsDeclared ? 'pass' : 'unknown', 3,
-          llmsDeclared ? 'llms.txt linked from the HTML'
+          llmsLinked ? 'pass' : 'unknown', 3,
+          llmsLinked ? 'llms.txt linked from the HTML'
             : 'Not linked from this HTML. Whether /llms.txt exists needs a server-side probe. llms.txt is a community proposal, not a formal standard.'),
         check('buyaction', 'BuyAction target exposed',
           buyAction ? 'pass' : product ? 'warn' : 'unknown', 4,
-          buyAction ? `BuyAction target: ${buyTarget}`
+          buyAction ? 'BuyAction target: ' + buyTarget
             : product ? 'No BuyAction object found'
             : 'Requires a Product entity',
           (!buyAction && product) ? issue('MEDIUM', 'Expose a BuyAction target',
@@ -805,69 +831,88 @@
             '<link rel="service-desc" type="application/vnd.oai.openapi+json" href="/openapi.json">'))
       ];
 
-      return finalizeReport(
-        { target: meta.target, sourceLabel: meta.sourceLabel, mode: meta.mode, checkoutObserved: purchaseObserved, timestamp: new Date().toISOString() },
-        { access, structured, semantic, checkout, machine }
-      );
+      return finalizeReport({
+        target: meta.target,
+        sourceLabel: meta.sourceLabel,
+        mode: meta.mode,
+        checkoutObserved: purchaseObserved,
+        timestamp: new Date().toISOString()
+      }, { access: access, structured: structured, semantic: semantic, checkout: checkout, machine: machine });
     }
 
     /* ================= Self-audit analysis ================= */
     function analyzeChecklist() {
-      const checksByKey = Object.fromEntries(PILLARS.map(p => [p.key, []]));
+      const byKey = {};
+      PILLARS.forEach(p => { byKey[p.key] = []; });
+
       state.checklist.forEach(item => {
         const pillarIndex = PILLARS.findIndex(p => p.key === item.pillar);
         const severity = pillarIndex < 2 ? 'CRITICAL' : pillarIndex < 4 ? 'HIGH' : 'MEDIUM';
-        checksByKey[item.pillar].push(check(
+        byKey[item.pillar].push(check(
           item.id, item.label, item.checked ? 'pass' : 'fail', 1, item.desc,
-          item.checked ? null : issue(severity, `Implement: ${item.label}`, item.desc,
+          item.checked ? null : issue(severity, 'Implement: ' + item.label, item.desc,
             'Not implemented (self-reported)',
-            `Implement ${item.label} consistently across product and checkout templates.`)
+            'Implement ' + item.label + ' consistently across product and checkout templates.')
         ));
       });
-      return finalizeReport(
-        { target: 'Self-assessment', sourceLabel: '15-point self-audit', mode: 'checklist', checkoutObserved: true, timestamp: new Date().toISOString() },
-        checksByKey
-      );
+
+      return finalizeReport({
+        target: 'Self-assessment',
+        sourceLabel: '15-point self-audit',
+        mode: 'checklist',
+        checkoutObserved: true,
+        timestamp: new Date().toISOString()
+      }, byKey);
     }
 
     /* ================= Rendering ================= */
-    const scoreTextClass = s => s === null ? 'text-slate-400' : s >= 80 ? 'text-emerald-400' : s >= 50 ? 'text-cyan-400' : 'text-rose-400';
-    const scoreBarClass = s => s === null ? 'bg-slate-700' : s >= 80 ? 'bg-emerald-400' : s >= 50 ? 'bg-cyan-400' : 'bg-rose-400';
+    function scoreTextClass(s) {
+      if (s === null) return 'text-slate-400';
+      return s >= 80 ? 'text-emerald-400' : s >= 50 ? 'text-cyan-400' : 'text-rose-400';
+    }
+    function scoreBarClass(s) {
+      if (s === null) return 'bg-slate-700';
+      return s >= 80 ? 'bg-emerald-400' : s >= 50 ? 'bg-cyan-400' : 'bg-rose-400';
+    }
 
     function renderReport(report) {
       state.report = report;
       const m = report.maturity;
-      const C = 2 * Math.PI * 52;
+      const circumference = 2 * Math.PI * 52;
 
       $('results').hidden = false;
-      $('overall-score-num').textContent = report.overall === null ? '—' : report.overall;
+      $('overall-score-num').textContent = report.overall === null ? '—' : String(report.overall);
 
       const ring = $('score-ring');
       ring.style.stroke = m.color;
+      ring.setAttribute('stroke-dasharray', String(circumference));
+      ring.style.strokeDashoffset = String(circumference);
       requestAnimationFrame(() => {
-        ring.style.strokeDashoffset = String(report.overall === null ? C : C * (1 - report.overall / 100));
+        const offset = report.overall === null ? circumference : circumference * (1 - report.overall / 100);
+        ring.style.strokeDashoffset = String(offset);
       });
 
       const badge = $('maturity-badge');
       badge.textContent = m.label;
-      badge.className = `rounded-full border px-3 py-1 font-mono text-xs font-semibold ${m.badge}`;
+      badge.className = 'rounded-full border px-3 py-1 font-mono text-xs font-semibold ' + m.badge;
 
       $('source-tag').textContent = report.sourceLabel;
       $('target-title').textContent = report.target;
-      $('summary-text').textContent = [m.summary, ...m.notes].join(' ');
-      $('coverage-text').textContent =
-        `Evidence coverage ${report.coverage}% · checkout ${report.checkoutObserved
-          ? (report.mode === 'checklist' ? 'self-reported' : 'observed') : 'not observed'}`;
+      $('summary-text').textContent = [m.summary].concat(m.notes).join(' ');
+      const checkoutLabel = report.checkoutObserved
+        ? (report.mode === 'checklist' ? 'self-reported' : 'observed')
+        : 'not observed';
+      $('coverage-text').textContent = 'Evidence coverage ' + report.coverage + '% · checkout ' + checkoutLabel;
 
       $('pillars-grid').innerHTML = report.pillars.map((p, i) => `
         <article class="glass rounded-2xl p-5">
           <div class="mb-3 flex items-center justify-between">
             <span class="font-mono text-xs text-slate-400">PILLAR 0${i + 1} · ${p.weight}%</span>
-            <strong class="font-mono text-sm ${scoreTextClass(p.score)}">${p.score === null ? 'N/A' : `${p.score}/100`}</strong>
+            <strong class="font-mono text-sm ${scoreTextClass(p.score)}">${p.score === null ? 'N/A' : p.score + '/100'}</strong>
           </div>
           <h4 class="mb-3 font-bold text-white">${esc(p.title)}</h4>
           <div class="mb-4 h-2 overflow-hidden rounded-full bg-slate-900">
-            <div class="h-full ${scoreBarClass(p.score)}" style="width:${p.score ?? 0}%"></div>
+            <div class="h-full ${scoreBarClass(p.score)}" style="width:${p.score === null ? 0 : p.score}%"></div>
           </div>
           ${p.score === null ? '<p class="mb-3 text-xs text-slate-400">Insufficient evidence: none of these checks could be observed.</p>' : ''}
           <ul class="space-y-3 border-t border-slate-800 pt-3">
@@ -893,12 +938,14 @@
 
     function renderIssues(filter) {
       const report = state.report;
+      if (!report) return;
+
       document.querySelectorAll('.filter-btn').forEach(btn => {
         const active = btn.dataset.filter === filter;
         btn.setAttribute('aria-pressed', String(active));
-        btn.className = `filter-btn rounded-lg border px-3 py-1.5 text-xs ${active
+        btn.className = 'filter-btn rounded-lg border px-3 py-1.5 text-xs ' + (active
           ? 'border-cyan-500/40 bg-cyan-500/20 text-cyan-300'
-          : 'border-slate-800 bg-slate-900 text-slate-400 hover:text-slate-200'}`;
+          : 'border-slate-800 bg-slate-900 text-slate-400 hover:text-slate-200');
       });
 
       const items = filter === 'ALL' ? report.issues : report.issues.filter(i => i.severity === filter);
@@ -940,32 +987,34 @@
       if (!r) return;
       const lines = [
         '# AgentReady Audit Report', '',
-        `- **Target:** ${r.target}`,
-        `- **Source:** ${r.sourceLabel}`,
-        `- **Date:** ${new Date(r.timestamp).toLocaleString()}`,
-        `- **Overall score:** ${r.overall === null ? 'n/a' : `${r.overall}/100`}`,
-        `- **Maturity:** ${r.maturity.label}`,
-        `- **Evidence coverage:** ${r.coverage}%`,
+        '- **Target:** ' + r.target,
+        '- **Source:** ' + r.sourceLabel,
+        '- **Date:** ' + new Date(r.timestamp).toLocaleString(),
+        '- **Overall score:** ' + (r.overall === null ? 'n/a' : r.overall + '/100'),
+        '- **Maturity:** ' + r.maturity.label,
+        '- **Evidence coverage:** ' + r.coverage + '%',
         ''
       ];
-      if (r.maturity.notes.length) lines.push(`> ${r.maturity.notes.join(' ')}`, '');
+      if (r.maturity.notes.length) lines.push('> ' + r.maturity.notes.join(' '), '');
       r.pillars.forEach((p, i) => {
-        lines.push(`## ${i + 1}. ${p.title}: ${p.score === null ? 'insufficient evidence' : `${p.score}/100`}`, '');
-        p.checks.forEach(c => lines.push(`- [${c.status.toUpperCase()}] ${c.label}: ${c.detail}`));
+        lines.push('## ' + (i + 1) + '. ' + p.title + ': ' + (p.score === null ? 'insufficient evidence' : p.score + '/100'), '');
+        p.checks.forEach(c => lines.push('- [' + c.status.toUpperCase() + '] ' + c.label + ': ' + c.detail));
         lines.push('');
       });
       if (r.issues.length) {
         lines.push('## Remediation roadmap', '');
         r.issues.forEach((x, i) => {
-          lines.push(`### ${i + 1}. [${x.severity}] ${x.title}`, '', x.impact, '', 'Suggested fix:', '', '```', x.after, '```', '');
+          lines.push('### ' + (i + 1) + '. [' + x.severity + '] ' + x.title, '', x.impact, '', 'Suggested fix:', '', '```', x.after, '```', '');
         });
       }
       const blob = new Blob([lines.join('\n')], { type: 'text/markdown;charset=utf-8' });
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.download = `agentready-audit-${Date.now()}.md`;
+      link.download = 'agentready-audit-' + Date.now() + '.md';
+      document.body.appendChild(link);
       link.click();
+      link.remove();
       URL.revokeObjectURL(url);
       showToast('Markdown report downloaded.', 'success');
     }
@@ -982,13 +1031,13 @@
     function switchTab(mode) {
       TAB_ORDER.forEach(name => {
         const active = name === mode;
-        const tab = $(`tab-${name}`);
+        const tab = $('tab-' + name);
         tab.setAttribute('aria-selected', String(active));
         tab.tabIndex = active ? 0 : -1;
-        tab.className = `tab-btn rounded-xl border px-4 py-2.5 text-sm font-medium ${active
+        tab.className = 'rounded-xl border px-4 py-2.5 text-sm font-medium ' + (active
           ? 'border-cyan-500/40 bg-cyan-500/15 text-cyan-300'
-          : 'border-slate-800 bg-slate-900 text-slate-400 hover:text-slate-200'}`;
-        $(`panel-${name}`).hidden = !active;
+          : 'border-slate-800 bg-slate-900 text-slate-400 hover:text-slate-200');
+        $('panel-' + name).hidden = !active;
       });
     }
 
@@ -1003,33 +1052,46 @@
       event.preventDefault();
       const mode = TAB_ORDER[next];
       switchTab(mode);
-      $(`tab-${mode}`).focus();
+      $('tab-' + mode).focus();
     }
-
-    function hideRetrievalBanner() { $('retrieval-banner').hidden = true; }
 
     function showRetrievalFailure(url, error) {
       let host = url;
-      try { host = new URL(url).hostname; } catch {}
-      $('retrieval-title').textContent = `Could not retrieve ${host}`;
-      $('retrieval-desc').textContent =
-        `${error.message} No readiness score was generated, because a failed retrieval says nothing about the site's quality.`;
+      try { host = new URL(url).hostname; } catch (e) { /* keep raw value */ }
+      $('retrieval-title').textContent = 'Could not retrieve ' + host;
+      $('retrieval-desc').textContent = error.message + ' No readiness score was generated, because a failed retrieval says nothing about the site quality.';
       $('retrieval-banner').hidden = false;
       showToast('Retrieval failed. No score was generated.', 'warn');
     }
 
-    function setScanBusy(busy, label = 'Retrieving…') {
+    function setScanBusy(busy) {
       const btn = $('scan-url-btn');
       btn.disabled = busy;
-      btn.textContent = busy ? label : 'Evaluate readiness';
+      btn.textContent = busy ? 'Retrieving…' : 'Evaluate readiness';
+    }
+
+    function runAnalysis(fn, successMessage) {
+      try {
+        renderReport(fn());
+        showToast(successMessage, 'success');
+      } catch (error) {
+        console.error(error);
+        showToast('Analysis failed. The page was retrieved but could not be scored.', 'warn');
+      }
     }
 
     async function runUrlScan() {
       const input = $('url-input');
-      hideRetrievalBanner();
+      $('retrieval-banner').hidden = true;
+
       let url;
-      try { url = normalizeUrl(input.value); }
-      catch (error) { showToast(error.message, 'warn'); input.focus(); return; }
+      try {
+        url = normalizeUrl(input.value);
+      } catch (error) {
+        showToast(error.message, 'warn');
+        input.focus();
+        return;
+      }
       input.value = url;
 
       setScanBusy(true);
@@ -1051,22 +1113,14 @@
       }), 'Analysis complete.');
     }
 
-    function runAnalysis(fn, successMessage) {
-      try {
-        renderReport(fn());
-        showToast(successMessage, 'success');
-      } catch (error) {
-        console.error(error);
-        showToast('Analysis failed. The page was retrieved but could not be scored.', 'warn');
-      }
-    }
-
     function runRawHtmlScan() {
       const value = $('raw-html-input').value.trim();
       if (value.length < CONFIG.minHtmlLength) return showToast('Paste the full page source first.', 'warn');
       if (value.length > CONFIG.maxHtmlLength) return showToast('The pasted source exceeds the 5 MB limit.', 'warn');
       runAnalysis(() => analyzeDocument(value, {
-        target: 'Pasted HTML document', sourceLabel: 'Raw source audit', mode: 'html'
+        target: 'Pasted HTML document',
+        sourceLabel: 'Raw source audit',
+        mode: 'html'
       }), 'HTML analysis complete.');
     }
 
@@ -1074,7 +1128,9 @@
       $('raw-html-input').value = DEMO_HTML;
       switchTab('html');
       runAnalysis(() => analyzeDocument(DEMO_HTML, {
-        target: 'AeroPulse Headphones (bundled demo)', sourceLabel: 'Demo sample', mode: 'html'
+        target: 'AeroPulse Headphones (bundled demo)',
+        sourceLabel: 'Demo sample',
+        mode: 'html'
       }), 'Demo loaded and analyzed.');
     }
 
@@ -1085,12 +1141,12 @@
     /* ================= Checklist UI ================= */
     function renderChecklist() {
       $('checklist-container').innerHTML = state.checklist.map(item => {
-        const pillarTitle = PILLARS.find(p => p.key === item.pillar).title;
+        const pillar = PILLARS.find(p => p.key === item.pillar);
         return `
           <label class="glass flex cursor-pointer items-start gap-3 rounded-xl p-4 hover:border-cyan-500/40">
             <input type="checkbox" data-id="${item.id}" class="mt-1 h-4 w-4 accent-cyan-500" ${item.checked ? 'checked' : ''}>
             <span>
-              <span class="mb-1 block font-mono text-[10px] uppercase text-cyan-400">${esc(pillarTitle)}</span>
+              <span class="mb-1 block font-mono text-[10px] uppercase text-cyan-400">${esc(pillar.title)}</span>
               <strong class="block text-sm text-white">${esc(item.label)}</strong>
               <span class="mt-1 block text-xs leading-relaxed text-slate-400">${esc(item.desc)}</span>
             </span>
@@ -1107,7 +1163,7 @@
     function init() {
       $('url-note').textContent = CONFIG.serverScanEndpoint
         ? 'Scans run through the configured server-side scanner.'
-        : 'No server scanner is configured. Direct browser retrieval only works for sites that allow cross-origin reads. Paste source for reliable results, or configure CONFIG.serverScanEndpoint.';
+        : 'No server scanner is configured. Direct browser retrieval works only for sites that allow cross-origin reads. Paste the page source for reliable results.';
 
       $('url-form').addEventListener('submit', e => { e.preventDefault(); runUrlScan(); });
       $('demo-btn').addEventListener('click', runDemo);
@@ -1116,8 +1172,10 @@
       $('banner-html-btn').addEventListener('click', () => switchTab('html'));
       $('banner-checklist-btn').addEventListener('click', () => switchTab('checklist'));
 
-      document.querySelectorAll('[role="tab"]').forEach(tab => {
-        tab.addEventListener('click', () => switchTab(tab.dataset.tab));
+      TAB_ORDER.forEach(name => {
+        const tab = $('tab-' + name);
+        tab.dataset.tab = name;
+        tab.addEventListener('click', () => switchTab(name));
         tab.addEventListener('keydown', onTabKeydown);
       });
 
@@ -1130,17 +1188,19 @@
       });
       $('run-checklist-btn').addEventListener('click', runChecklist);
 
-      document.querySelectorAll('.filter-btn').forEach(btn => {
-        btn.addEventListener('click', () => renderIssues(btn.dataset.filter));
+      $('filter-group').addEventListener('click', e => {
+        const btn = e.target.closest('.filter-btn');
+        if (btn) renderIssues(btn.dataset.filter);
       });
 
       $('download-md-btn').addEventListener('click', downloadMarkdown);
       $('copy-json-btn').addEventListener('click', copyJson);
 
+      switchTab('url');
       renderChecklist();
     }
 
-    document.addEventListener('DOMContentLoaded', init);
+    init();
   </script>
 </body>
 </html>
