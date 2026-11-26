@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Evaluate a website's readiness for AI search and shopping agents.">
+  <title>AgentReady - Agentic Commerce Readiness Evaluator</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'], mono: ['ui-monospace', 'SFMono-Regular', 'monospace'] },
+          colors: { obsidian: '#090d16', card: '#0f1623' }
+        }
+      }
+    };
+  </script>
+  <style>
+    body {
+      background-color: #090d16;
+      color: #f1f5f9;
+      background-image: radial-gradient(circle at 50% 0%, rgba(6,182,212,.12), transparent 55%), linear-gradient(to right, rgba(30,41,59,.22) 1px, transparent 1px), linear-gradient(to bottom, rgba(30,41,59,.22) 1px, transparent 1px);
+      background-size: 100% 100%, 40px 40px, 40px 40px;
+    }
+    .glass { background: rgba(15,22,35,.86); backdrop-filter: blur(12px); border: 1px solid rgba(51,65,85,.58); }
+    .code-scroll::-webkit-scrollbar { width: 6px; height: 6px; }
+    .code-scroll::-webkit-scrollbar-thumb { background: #334155; border-radius: 999px; }
+    button:disabled { cursor: not-allowed; opacity: .65; }
+  </style>
+</head>
+<body class="min-h-screen antialiased selection:bg-cyan-500/30">
+  <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex max-w-sm flex-col gap-2 pointer-events-none"></div>
+
+  <header class="sticky top-0 z-40 glass border-x-0 border-t-0">
+    <div class="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center gap-3">
+        <div class="grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-br from-cyan-500 to-emerald-500 font-black text-slate-950">A</div>
+        <div>
+          <div class="flex items-center gap-2"><strong class="text-lg text-white">AgentReady</strong><span class="rounded-full border border-cyan-500/30 bg-cyan-500/10 px-2 py-0.5 font-mono text-[11px] text-cyan-300">v3.0</span></div>
+          <p class="hidden text-xs text-slate-400 sm:block">Agentic search and commerce evaluator</p>
+        </div>
+      </div>
+      <button type="button" onclick="loadDemoPreset('modern')" class="rounded-lg border border-slate-700 bg-slate-800 px-3.5 py-1.5 text-xs font-semibold text-cyan-300 hover:bg-slate-700">Try demo</button>
+    </div>
+  </header>
+
+  <main class="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+    <section class="mx-auto mb-10 max-w-3xl text-center">
+      <div class="mb-4 inline-flex items-center gap-2 rounded-full border border-emerald-500/25 bg-emerald-500/10 px-3 py-1 text-xs font-medium text-emerald-300"><span class="h-2 w-2 rounded-full bg-emerald-400"></span>Static front end with graceful retrieval fallbacks</div>
+      <h1 class="mb-4 text-3xl font-extrabold tracking-tight text-white sm:text-5xl">Is your website ready for <span class="bg-gradient-to-r from-cyan-400 to-emerald-400 bg-clip-text text-transparent">AI shopping agents?</span></h1>
+      <p class="text-slate-400 sm:text-lg">Inspect structured product data, semantic controls, checkout friction, and machine-readable interfaces.</p>
+    </section>
+
+    <section class="glass mb-10 rounded-2xl p-5 shadow-2xl shadow-black/40 sm:p-7">
+      <div class="mb-6 flex flex-wrap gap-2 border-b border-slate-800 pb-4" role="tablist" aria-label="Evaluation input mode">
+        <button id="tab-btn-url" type="button" role="tab" aria-selected="true" onclick="switchInputMode('url')" class="tab-btn rounded-xl border border-cyan-500/40 bg-cyan-500/15 px-4 py-2.5 text-sm font-medium text-cyan-300">Live URL</button>
+        <button id="tab-btn-html" type="button" role="tab" aria-selected="false" onclick="switchInputMode('html')" class="tab-btn rounded-xl border border-slate-800 bg-slate-900 px-4 py-2.5 text-sm font-medium text-slate-400">Paste source</button>
+        <button id="tab-btn-checklist" type="button" role="tab" aria-selected="false" onclick="switchInputMode('checklist')" class="tab-btn rounded-xl border border-slate-800 bg-slate-900 px-4 py-2.5 text-sm font-medium text-slate-400">Self-audit</button>
+      </div>
+
+      <div id="mode-url" role="tabpanel" class="space-y-4">
+        <form id="url-form" class="flex flex-col gap-3 sm:flex-row">
+          <label class="sr-only" for="url-input">Website address</label>
+          <input id="url-input" type="text" inputmode="url" autocomplete="url" placeholder="apple.com or a product-page URL" class="min-w-0 flex-1 rounded-xl border border-slate-700 bg-slate-950 px-4 py-3.5 font-mono text-sm text-white outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20">
+          <button id="scan-url-btn" type="submit" class="rounded-xl bg-gradient-to-r from-cyan-500 to-emerald-500 px-6 py-3.5 text-sm font-bold text-slate-950 shadow-lg shadow-cyan-500/20">Evaluate readiness</button>
+        </form>
+        <div id="retrieval-banner" class="hidden rounded-xl border border-amber-500/30 bg-amber-500/10 p-4 text-sm text-amber-100" role="status">
+          <h2 id="retrieval-title" class="mb-1 font-semibold text-amber-300">The page could not be retrieved</h2>
+          <p id="retrieval-desc" class="mb-3 text-xs leading-relaxed text-amber-100/85"></p>
+          <div class="flex flex-wrap gap-2">
+            <button type="button" onclick="switchInputMode('html')" class="rounded-lg border border-amber-500/40 bg-amber-500/20 px-3 py-1.5 text-xs font-semibold">Paste page source</button>
+            <button type="button" onclick="switchInputMode('checklist')" class="rounded-lg border border-slate-700 bg-slate-800 px-3 py-1.5 text-xs font-semibold text-slate-200">Use self-audit</button>
+          </div>
+        </div>
+        <p class="text-xs text-slate-500">A static browser app cannot guarantee access to third-party sites. Relay failure is shown as a retrieval diagnostic and is not converted into a website score.</p>
+      </div>
+
+      <div id="mode-html" role="tabpanel" class="hidden space-y-4">
+        <label for="raw-html-input" class="block text-xs font-medium text-slate-300">Paste the full page source. In a browser, use View Source rather than copying the rendered page.</label>
+        <textarea id="raw-html-input" rows="10" spellcheck="false" placeholder="<!DOCTYPE html>..." class="code-scroll w-full rounded-xl border border-slate-700 bg-slate-950 p-4 font-mono text-xs leading-relaxed text-slate-200 outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20"></textarea>
+        <div class="flex justify-between gap-3"><button type="button" onclick="document.getElementById('raw-html-input').value=''" class="text-xs text-slate-500 hover:text-slate-300">Clear</button><button type="button" onclick="runRawHtmlScan()" class="rounded-xl bg-gradient-to-r from-cyan-500 to-emerald-500 px-6 py-3 text-sm font-bold text-slate-950">Analyze pasted HTML</button></div>
+      </div>
+
+      <div id="mode-checklist" role="tabpanel" class="hidden space-y-5">
+        <div class="flex flex-wrap items-center justify-between gap-3"><div><h2 class="font-semibold text-white">15-point architecture audit</h2><p class="text-xs text-slate-400">Select the capabilities implemented across your product and checkout templates.</p></div><div class="flex gap-2"><button type="button" onclick="setAllChecklist(true)" class="rounded bg-slate-800 px-2.5 py-1 text-xs text-cyan-300">Check all</button><button type="button" onclick="setAllChecklist(false)" class="rounded bg-slate-800 px-2.5 py-1 text-xs text-slate-300">Reset</button></div></div>
+        <div id="checklist-container" class="grid gap-4 md:grid-cols-2 lg:grid-cols-3"></div>
+        <div class="flex justify-end"><button type="button" onclick="runChecklistAudit()" class="rounded-xl bg-gradient-to-r from-cyan-500 to-emerald-500 px-6 py-3 text-sm font-bold text-slate-950">Generate report</button></div>
+      </div>
+    </section>
+
+    <section id="results-dashboard" class="hidden space-y-8" aria-live="polite">
+      <div class="glass rounded-2xl p-6 sm:p-8">
+        <div class="flex flex-col items-center justify-between gap-8 lg:flex-row">
+          <div class="flex flex-col items-center gap-6 text-center sm:flex-row sm:text-left">
+            <div class="relative grid h-36 w-36 shrink-0 place-items-center">
+              <svg class="h-full w-full -rotate-90" viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="52" fill="none" stroke="#1e293b" stroke-width="10"></circle><circle id="score-ring" cx="60" cy="60" r="52" fill="none" stroke="#06b6d4" stroke-width="10" stroke-dasharray="326.72" stroke-dashoffset="326.72" stroke-linecap="round" style="transition:stroke-dashoffset 1s ease"></circle></svg>
+              <div class="absolute text-center"><div id="overall-score-num" class="text-4xl font-extrabold text-white">0</div><div class="font-mono text-[11px] text-slate-400">/ 100</div></div>
+            </div>
+            <div><div class="mb-2 flex flex-wrap justify-center gap-2 sm:justify-start"><span id="maturity-badge" class="rounded-full border px-3 py-1 font-mono text-xs font-semibold"></span><span id="scan-source-tag" class="rounded-full border border-slate-700 bg-slate-800 px-3 py-1 font-mono text-xs text-slate-400"></span></div><h2 id="analyzed-target-title" class="mb-1 break-all text-xl font-bold text-white sm:text-2xl"></h2><p id="maturity-summary-text" class="max-w-xl text-sm leading-relaxed text-slate-400"></p></div>
+          </div>
+          <div class="flex flex-wrap gap-2"><button type="button" onclick="downloadMarkdownReport()" class="rounded-xl border border-slate-700 bg-slate-800 px-4 py-2.5 text-xs font-semibold text-white">Download .md</button><button type="button" onclick="copyJsonSummary()" class="rounded-xl border border-slate-700 bg-slate-900 px-4 py-2.5 text-xs font-semibold text-slate-300">Copy JSON</button></div>
+        </div>
+      </div>
+
+      <div><div class="mb-4 flex items-center justify-between gap-3"><h2 class="text-lg font-bold text-white">Five-pillar breakdown</h2><span class="font-mono text-xs text-slate-500">Weighted score</span></div><div id="pillars-grid" class="grid gap-5 md:grid-cols-2 lg:grid-cols-3"></div></div>
+
+      <div class="glass rounded-2xl p-6 sm:p-8"><div class="mb-6 flex flex-wrap items-center justify-between gap-4"><div><h2 class="text-lg font-bold text-white">Prioritized remediation roadmap</h2><p class="text-xs text-slate-400">Concrete changes based on the supplied HTML.</p></div><div class="flex flex-wrap gap-2" id="severity-filters"><button type="button" data-filter="ALL" onclick="filterRemediation('ALL')" class="filter-btn rounded-lg border px-3 py-1.5 text-xs">All</button><button type="button" data-filter="CRITICAL" onclick="filterRemediation('CRITICAL')" class="filter-btn rounded-lg border px-3 py-1.5 text-xs">Critical</button><button type="button" data-filter="HIGH" onclick="filterRemediation('HIGH')" class="filter-btn rounded-lg border px-3 py-1.5 text-xs">High</button><button type="button" data-filter="MEDIUM" onclick="filterRemediation('MEDIUM')" class="filter-btn rounded-lg border px-3 py-1.5 text-xs">Medium</button></div></div><div id="remediation-list" class="space-y-4"></div></div>
+    </section>
+    <section id="framework" class="mt-16 space-y-8 border-t border-slate-800 pt-12">
+      <div class="max-w-3xl">
+        <span class="font-mono text-xs uppercase tracking-widest text-cyan-400">Architecture Standard</span>
+        <h2 class="mt-1 mb-3 text-2xl font-bold text-white sm:text-3xl">The 5-Level Agentic Commerce Maturity Model</h2>
+        <p class="text-sm leading-relaxed text-slate-400 sm:text-base">Use the five pillars together: access and renderability, structured entity data, semantic DOM controls, predictable checkout, and machine-facing interfaces.</p>
+      </div>
+      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+        <article class="glass rounded-xl border-t-2 border-t-rose-500 p-5"><span class="font-mono text-[11px] font-semibold text-rose-400">LEVEL 0 (0-24)</span><h3 class="mt-1 mb-2 font-bold text-white">Invisible / Blocked</h3><p class="text-xs leading-relaxed text-slate-400">Critical rendering, access, challenge, or semantic barriers prevent dependable agent use.</p></article>
+        <article class="glass rounded-xl border-t-2 border-t-amber-500 p-5"><span class="font-mono text-[11px] font-semibold text-amber-400">LEVEL 1 (25-49)</span><h3 class="mt-1 mb-2 font-bold text-white">Discoverable</h3><p class="text-xs leading-relaxed text-slate-400">Basic content can be found, but important product and transaction signals remain ambiguous.</p></article>
+        <article class="glass rounded-xl border-t-2 border-t-yellow-400 p-5"><span class="font-mono text-[11px] font-semibold text-yellow-300">LEVEL 2 (50-69)</span><h3 class="mt-1 mb-2 font-bold text-white">Machine-Parseable</h3><p class="text-xs leading-relaxed text-slate-400">Structured product information is readable, while some action or checkout friction remains.</p></article>
+        <article class="glass rounded-xl border-t-2 border-t-cyan-400 p-5"><span class="font-mono text-[11px] font-semibold text-cyan-400">LEVEL 3 (70-89)</span><h3 class="mt-1 mb-2 font-bold text-white">DOM-Transactable</h3><p class="text-xs leading-relaxed text-slate-400">Semantic controls and a predictable guest purchase path support browser-based agents.</p></article>
+        <article class="glass rounded-xl border-t-2 border-t-emerald-400 p-5"><span class="font-mono text-[11px] font-semibold text-emerald-400">LEVEL 4 (90-100)</span><h3 class="mt-1 mb-2 font-bold text-white">Autonomous-Native</h3><p class="text-xs leading-relaxed text-slate-400">Strong structured data plus explicit machine interfaces enable high-confidence agent workflows.</p></article>
+      </div>
+      <div class="glass rounded-2xl p-6">
+        <h3 class="mb-4 text-lg font-bold text-white">5-Pillar Evaluation Framework</h3>
+        <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
+          <div><strong class="text-cyan-300">1. Bot Access</strong><p class="mt-1 text-xs text-slate-400">SSR content, crawler rules and challenge friction.</p></div>
+          <div><strong class="text-cyan-300">2. Structured Data</strong><p class="mt-1 text-xs text-slate-400">Product, Offer, price, availability and identifiers.</p></div>
+          <div><strong class="text-cyan-300">3. Semantic DOM</strong><p class="mt-1 text-xs text-slate-400">Buttons, labels, links and accessible action affordances.</p></div>
+          <div><strong class="text-cyan-300">4. Checkout</strong><p class="mt-1 text-xs text-slate-400">Guest flow, CAPTCHA friction and cost transparency.</p></div>
+          <div><strong class="text-cyan-300">5. Machine Interfaces</strong><p class="mt-1 text-xs text-slate-400">llms.txt, BuyAction, feeds, OpenAPI and MCP signals.</p></div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="mt-12 border-t border-slate-800 py-6 text-center text-xs text-slate-500">AgentReady - static client-side evaluator. For dependable production scanning, connect the optional server-side endpoint described in the script.</footer>
+
+  <script>
+    'use strict';
+
+    const CONFIG = {
+      // Recommended production option: set this to your own endpoint, for example '/api/scan'.
+      // It must accept ?url=https%3A... and return either { html: '<html>...' } or plain HTML.
+      serverScanEndpoint: '',
+      relayTimeoutMs: 10000,
+      minPayloadLength: 200,
+      maxInputLength: 5_000_000
+    };
+
+    const DEMO_MODERN_HTML = `<!DOCTYPE html><html lang="en"><head><title>AeroPulse Headphones</title><meta name="robots" content="index,follow"><meta property="og:title" content="AeroPulse Headphones"><link rel="alternate" type="text/plain" href="/llms.txt"><link rel="service-desc" href="/openapi.json"><script type="application/ld+json">{"@context":"https://schema.org","@type":"Product","name":"AeroPulse Headphones","sku":"AP-900","gtin13":"0194252012345","offers":{"@type":"Offer","price":"249.00","priceCurrency":"USD","availability":"https://schema.org/InStock","potentialAction":{"@type":"BuyAction","target":"/checkout?sku=AP-900"}}}<\/script></head><body><main><article><h1>AeroPulse Headphones</h1><p>$249.00 USD - In stock</p><form action="/cart/add" method="post" aria-label="Configure and purchase"><label for="finish">Finish</label><select id="finish"><option>Black</option></select><button type="submit" aria-label="Add AeroPulse Headphones to cart">Add to cart</button><a href="/checkout/guest" role="button">Guest checkout</a><p>No account required. Free two-day shipping.</p></form></article></main></body></html>`;
+
+    const CHECKLIST_ITEMS = [
+      ['c1',0,'Server-rendered product content','Titles, prices and stock appear in initial HTML.'],['c2',0,'Permissive crawler rules','Robots directives permit indexing and snippets.'],['c3',0,'No aggressive bot-wall','Product pages do not require a visual challenge.'],
+      ['c4',1,'Product and Offer JSON-LD','Exact price, currency and availability are structured.'],['c5',1,'GTIN, SKU or MPN','Canonical identifiers support product matching.'],['c6',1,'Shipping and return schema','Policies are machine-readable.'],
+      ['c7',2,'Native buttons and selects','Controls use semantic HTML.'],['c8',2,'Accessible control labels','Icon and variant controls have names.'],['c9',2,'Descriptive link text','Links communicate their destination.'],
+      ['c10',3,'Guest checkout','Purchase does not require registration.'],['c11',3,'No visual CAPTCHA at checkout','Passive risk controls replace puzzles.'],['c12',3,'Upfront total cost','Shipping and tax are available before payment.'],
+      ['c13',4,'Published llms.txt','A machine-readable discovery manifest exists.'],['c14',4,'BuyAction or potentialAction','Structured action targets are exposed.'],['c15',4,'Product feed, OpenAPI or MCP','A machine interface supports trusted integrations.']
+    ].map(([id,pillar,label,desc], index) => ({id,pillar,label,desc,checked:[0,1,2,3,6,8,9,11].includes(index)}));
+
+    const PILLAR_NAMES = ['Bot Access & Renderability','Structured Data & Entity Clarity','Semantic DOM & Action Affordance','Checkout & Flow Predictability','Machine Interfaces & Protocols'];
+    let currentReport = null;
+
+    document.getElementById('url-form').addEventListener('submit', event => { event.preventDefault(); runUrlScan(); });
+    document.addEventListener('DOMContentLoaded', renderChecklistUI);
+
+    function normalizeTargetUrl(input) {
+      let value = String(input || '').trim();
+      if (!value) throw new Error('Please enter a website address.');
+      if (!/^https?:\/\//i.test(value)) value = `https://${value}`;
+      let url;
+      try { url = new URL(value); } catch { throw new Error('Please enter a valid website address.'); }
+      if (!['http:','https:'].includes(url.protocol)) throw new Error('Only HTTP and HTTPS URLs are supported.');
+      if (!url.hostname.includes('.') && url.hostname !== 'localhost') throw new Error('Please enter a complete hostname, such as apple.com.');
+      url.hash = '';
+      return url.href;
+    }
+
+    async function fetchWithTimeout(url, options = {}, timeoutMs = CONFIG.relayTimeoutMs) {
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), timeoutMs);
+      try { return await fetch(url, {...options, signal: controller.signal}); }
+      finally { clearTimeout(timer); }
+    }
+
+    function looksLikeUsableContent(content) {
+      if (!content || content.trim().length < CONFIG.minPayloadLength) return false;
+      const start = content.slice(0, 5000);
+      return ![/access denied/i,/403 forbidden/i,/attention required.*cloudflare/i,/verify you are human/i,/request blocked/i].some(pattern => pattern.test(start));
+    }
+
+    async function fetchHtml(targetUrl, button) {
+      const methods = [];
+      if (CONFIG.serverScanEndpoint) {
+        methods.push({name:'Server scanner', run: async () => {
+          const res = await fetchWithTimeout(`${CONFIG.serverScanEndpoint}?url=${encodeURIComponent(targetUrl)}`);
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          const type = res.headers.get('content-type') || '';
+          if (type.includes('application/json')) { const data = await res.json(); return data.html || ''; }
+          return res.text();
+        }});
+      }
+      methods.push(
+        {name:'CodeTabs relay', run: async () => { const res = await fetchWithTimeout(`https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(targetUrl)}`); if (!res.ok) throw new Error(`HTTP ${res.status}`); return res.text(); }},
+        {name:'AllOrigins relay', run: async () => { const res = await fetchWithTimeout(`https://api.allorigins.win/get?url=${encodeURIComponent(targetUrl)}`); if (!res.ok) throw new Error(`HTTP ${res.status}`); const data = await res.json(); return data.contents || ''; }},
+        {name:'Jina reader', run: async () => { const res = await fetchWithTimeout(`https://r.jina.ai/${targetUrl}`, {headers:{Accept:'text/html,text/plain;q=0.9'}}); if (!res.ok) throw new Error(`HTTP ${res.status}`); return res.text(); }}
+      );
+      const errors = [];
+      for (let i=0; i<methods.length; i++) {
+        button.textContent = `Trying ${methods[i].name} (${i+1}/${methods.length})...`;
+        try { const html = await methods[i].run(); if (!looksLikeUsableContent(html)) throw new Error('empty or blocked response'); return {html, method:methods[i].name}; }
+        catch (error) { errors.push(`${methods[i].name}: ${error.name === 'AbortError' ? 'timeout' : error.message}`); }
+      }
+      throw new Error(errors.join(' | '));
+    }
+
+    async function runUrlScan() {
+      const input = document.getElementById('url-input');
+      const banner = document.getElementById('retrieval-banner');
+      let url;
+      banner.classList.add('hidden');
+      try { url = normalizeTargetUrl(input.value); }
+      catch (error) { showToast(error.message, 'warn'); input.focus(); return; }
+      input.value = url;
+      if (new URL(url).hostname === 'soundcraft.example') return loadDemoPreset('modern');
+      const button = document.getElementById('scan-url-btn');
+      const original = button.textContent;
+      button.disabled = true;
+      try {
+        const {html, method} = await fetchHtml(url, button);
+        const report = analyzeHtmlDocument(html, url, `Live scan via ${method}`);
+        renderDashboard(report);
+        showToast(`Successfully analyzed ${new URL(url).hostname}.`, 'success');
+      } catch (error) {
+        console.warn(error);
+        document.getElementById('retrieval-title').textContent = `Could not retrieve ${new URL(url).hostname}`;
+        document.getElementById('retrieval-desc').textContent = 'The target site or every configured relay rejected the request. No readiness score has been generated because relay failure is not evidence of website quality. Try a specific product page, paste its page source, or configure CONFIG.serverScanEndpoint.';
+        banner.classList.remove('hidden');
+        showToast('Retrieval failed; no website score was generated.', 'warn');
+      } finally { button.disabled = false; button.textContent = original; }
+    }
+
+    function switchInputMode(mode) {
+      ['url','html','checklist'].forEach(name => {
+        const active = name === mode;
+        document.getElementById(`mode-${name}`).classList.toggle('hidden', !active);
+        const button = document.getElementById(`tab-btn-${name}`);
+        button.setAttribute('aria-selected', String(active));
+        button.className = `tab-btn rounded-xl border px-4 py-2.5 text-sm font-medium ${active ? 'border-cyan-500/40 bg-cyan-500/15 text-cyan-300' : 'border-slate-800 bg-slate-900 text-slate-400'}`;
+      });
+    }
+
+    function runRawHtmlScan() {
+      const value = document.getElementById('raw-html-input').value.trim();
+      if (value.length < 30) return showToast('Paste valid HTML source first.', 'warn');
+      if (value.length > CONFIG.maxInputLength) return showToast('The pasted source exceeds the 5 MB safety limit.', 'warn');
+      renderDashboard(analyzeHtmlDocument(value, 'Pasted HTML document', 'Raw source audit'));
+      showToast('HTML analysis completed.', 'success');
+    }
+
+    function loadDemoPreset() {
+      document.getElementById('url-input').value = 'https://soundcraft.example/products/aeropulse';
+      renderDashboard(analyzeHtmlDocument(DEMO_MODERN_HTML, 'soundcraft.example/products/aeropulse', 'Demo store'));
+      showToast('Loaded the high-readiness demo.', 'success');
+    }
+
+    function renderChecklistUI() {
+      const container = document.getElementById('checklist-container');
+      container.innerHTML = CHECKLIST_ITEMS.map(item => `<label class="glass cursor-pointer rounded-xl p-4 hover:border-cyan-500/40"><span class="flex items-start gap-3"><input type="checkbox" class="mt-1 h-4 w-4 accent-cyan-500" ${item.checked ? 'checked' : ''} onchange="toggleChecklistItem('${item.id}',this.checked)"><span><span class="mb-1 block font-mono text-[10px] uppercase text-cyan-400">${escapeHtml(PILLAR_NAMES[item.pillar])}</span><strong class="block text-sm text-white">${escapeHtml(item.label)}</strong><span class="mt-1 block text-xs leading-relaxed text-slate-400">${escapeHtml(item.desc)}</span></span></span></label>`).join('');
+    }
+    function toggleChecklistItem(id, checked) { const item = CHECKLIST_ITEMS.find(x => x.id === id); if (item) item.checked = checked; }
+    function setAllChecklist(checked) { CHECKLIST_ITEMS.forEach(item => item.checked = checked); renderChecklistUI(); }
+
+    function runChecklistAudit() {
+      const pillars = PILLAR_NAMES.map((title, pillar) => {
+        const items = CHECKLIST_ITEMS.filter(item => item.pillar === pillar);
+        return {title, score:Math.round(items.filter(item => item.checked).length / items.length * 100), checks:items.map(item => ({status:item.checked?'pass':'fail', text:item.label}))};
+      });
+      const issues = CHECKLIST_ITEMS.filter(item => !item.checked).map(item => ({severity:item.pillar < 2 ? 'CRITICAL' : item.pillar < 4 ? 'HIGH' : 'MEDIUM', pillar:PILLAR_NAMES[item.pillar], title:`Implement: ${item.label}`, impact:item.desc, before:`Current gap: ${item.label} is not implemented.`, after:`Implement ${item.label} consistently across product and checkout templates.`}));
+      renderDashboard({target:'Self-assessment', sourceType:'15-point self-audit', timestamp:new Date().toISOString(), overallScore:Math.round(pillars.reduce((sum,p)=>sum+p.score,0)/pillars.length), pillars, issues});
+      showToast('Self-audit report generated.', 'success');
+    }
+
+    function findSchemaObjects(value, output = []) {
+      if (!value || typeof value !== 'object') return output;
+      if (Array.isArray(value)) { value.forEach(item => findSchemaObjects(item, output)); return output; }
+      output.push(value);
+      if (Array.isArray(value['@graph'])) value['@graph'].forEach(item => findSchemaObjects(item, output));
+      Object.values(value).forEach(child => { if (child && typeof child === 'object') findSchemaObjects(child, output); });
+      return output;
+    }
+    function schemaHasType(objects, names) {
+      return objects.some(obj => { const type = obj['@type']; const list = Array.isArray(type) ? type : [type]; return list.some(t => names.includes(String(t || '').split('/').pop())); });
+    }
+
+    function analyzeHtmlDocument(htmlString, target, sourceType) {
+      const doc = new DOMParser().parseFromString(htmlString, 'text/html');
+      const lower = htmlString.toLowerCase();
+      const issues = [];
+      const bodyText = (doc.body?.innerText || doc.body?.textContent || '').replace(/\s+/g,' ').trim();
+      const rootShell = !!doc.querySelector('#root,#app,#__next') && bodyText.length < 180;
+      const robots = (doc.querySelector('meta[name="robots"]')?.content || '').toLowerCase();
+      const captcha = /recaptcha|hcaptcha|cf-turnstile|challenge-platform/i.test(htmlString);
+
+      let p1=100; const c1=[];
+      if (rootShell || bodyText.length < 100) { p1-=45; c1.push({status:'fail',text:'Minimal server-rendered text detected'}); issues.push(issue('CRITICAL',PILLAR_NAMES[0],'Render critical content in initial HTML','Lightweight crawlers may receive an empty application shell.','<div id="root"></div>','<main><h1>Product name</h1><p>$249 - In stock</p></main>')); } else c1.push({status:'pass',text:`Readable initial content (${bodyText.length} characters)`});
+      if (/noindex|noai/.test(robots)) { p1-=35; c1.push({status:'fail',text:`Restrictive robots meta: ${robots}`}); } else c1.push({status:'pass',text:'No blocking robots meta detected'});
+      if (captcha) { p1-=25; c1.push({status:'warn',text:'Challenge or CAPTCHA markup detected'}); } else c1.push({status:'pass',text:'No CAPTCHA markup detected'});
+      p1=Math.max(0,p1);
+
+      const schemaObjects=[];
+      doc.querySelectorAll('script[type="application/ld+json"]').forEach(script => { try { findSchemaObjects(JSON.parse(script.textContent), schemaObjects); } catch {} });
+      const product=schemaHasType(schemaObjects,['Product']);
+      const offer=schemaHasType(schemaObjects,['Offer','AggregateOffer']);
+      const schemaText=JSON.stringify(schemaObjects);
+      const identifier=/"(?:gtin\d*|sku|mpn)"\s*:/i.test(schemaText);
+      const og=!!doc.querySelector('meta[property="og:title"]');
+      let p2=0; const c2=[];
+      if(product){p2+=40;c2.push({status:'pass',text:'Product JSON-LD found'});} else {c2.push({status:'fail',text:'Product JSON-LD missing'});issues.push(issue('CRITICAL',PILLAR_NAMES[1],'Add Product and Offer JSON-LD','Agents otherwise infer price and stock from unstructured text.','<div class="price">$249</div>','<script type="application/ld+json">{"@context":"https://schema.org","@type":"Product","name":"Product name","offers":{"@type":"Offer","price":"249.00","priceCurrency":"USD","availability":"https://schema.org/InStock"}}<\\/script>'));}
+      if(offer){p2+=30;c2.push({status:'pass',text:'Offer schema found'});}else c2.push({status:'fail',text:'Offer price and availability schema missing'});
+      if(identifier){p2+=15;c2.push({status:'pass',text:'Product identifier found'});}else c2.push({status:'warn',text:'GTIN, SKU or MPN missing'});
+      if(og){p2+=15;c2.push({status:'pass',text:'Open Graph title found'});}else c2.push({status:'warn',text:'Open Graph title missing'});
+
+      const fake=doc.querySelectorAll('div[onclick],span[onclick],div[class*="btn"],a[href="#"]');
+      const controls=[...doc.querySelectorAll('button,input[type="submit"],[role="button"]')];
+      const unlabeled=controls.filter(el=>!((el.textContent||el.value||'').trim() || el.getAttribute('aria-label') || el.getAttribute('title')));
+      const vague=[...doc.querySelectorAll('a')].filter(a=>/^(click here|learn more|here|more)$/i.test((a.textContent||'').trim()));
+      let p3=100;const c3=[];
+      if(fake.length>controls.length){p3-=35;c3.push({status:'fail',text:`${fake.length} non-semantic clickable elements`});issues.push(issue('HIGH',PILLAR_NAMES[2],'Replace clickable divs with buttons','Browser agents rely on semantic controls and the accessibility tree.','<div onclick="addToCart()">Add</div>','<button type="button" aria-label="Add product to cart">Add to cart</button>'));}else c3.push({status:'pass',text:`${controls.length} semantic controls detected`});
+      if(unlabeled.length){p3-=25;c3.push({status:'warn',text:`${unlabeled.length} unlabeled controls`});}else c3.push({status:'pass',text:'Controls have accessible names'});
+      if(vague.length){p3-=20;c3.push({status:'warn',text:`${vague.length} ambiguous links`});}else c3.push({status:'pass',text:'No ambiguous link labels detected'});p3=Math.max(0,p3);
+
+      let p4=65;const c4=[];const guest=/guest checkout|no account required|express checkout|buy now/i.test(lower);const forced=/mandatory.*account|sign in.*to.*checkout|must log in/i.test(lower);
+      if(guest&&!forced){p4+=25;c4.push({status:'pass',text:'Guest or express checkout signaled'});}else if(forced){p4-=35;c4.push({status:'fail',text:'Forced account flow detected'});issues.push(issue('CRITICAL',PILLAR_NAMES[3],'Offer guest checkout','Registration and verification loops interrupt autonomous checkout.','Sign in to continue','<a href="/checkout/guest">Continue as guest</a>'));}else c4.push({status:'warn',text:'Guest checkout is not explicit'});
+      if(captcha){p4-=25;c4.push({status:'fail',text:'CAPTCHA may block automated completion'});}else{p4+=10;c4.push({status:'pass',text:'No CAPTCHA markup detected'});}p4=Math.max(0,Math.min(100,p4));
+
+      let p5=15;const c5=[];const llms=/llms\.txt/i.test(htmlString);const buy=/(?:"BuyAction"|"potentialAction")/i.test(schemaText);const api=/openapi|swagger|service-desc|\bmcp\b|\/api\//i.test(htmlString);
+      if(llms){p5+=35;c5.push({status:'pass',text:'llms.txt reference found'});}else{c5.push({status:'fail',text:'llms.txt reference not found'});issues.push(issue('MEDIUM',PILLAR_NAMES[4],'Publish a root llms.txt manifest','It gives agents a concise map of catalog and policy resources.','No discovery manifest','<link rel="alternate" type="text/plain" href="/llms.txt">'));}
+      if(buy){p5+=30;c5.push({status:'pass',text:'BuyAction or potentialAction found'});}else c5.push({status:'warn',text:'BuyAction target not found'});
+      if(api){p5+=20;c5.push({status:'pass',text:'API or machine-interface signal found'});}else c5.push({status:'warn',text:'No API, OpenAPI or MCP signal found'});p5=Math.min(100,p5);
+
+      const pillars=[{title:PILLAR_NAMES[0],score:p1,checks:c1},{title:PILLAR_NAMES[1],score:p2,checks:c2},{title:PILLAR_NAMES[2],score:p3,checks:c3},{title:PILLAR_NAMES[3],score:p4,checks:c4},{title:PILLAR_NAMES[4],score:p5,checks:c5}];
+      return {target,sourceType,timestamp:new Date().toISOString(),overallScore:Math.round(p1*.22+p2*.28+p3*.22+p4*.18+p5*.10),pillars,issues};
+    }
+
+    function issue(severity,pillar,title,impact,before,after){return {severity,pillar,title,impact,before,after};}
+    function tier(score){if(score>=90)return['LEVEL 4: AUTONOMOUS-NATIVE','#10b981','Elite readiness with strong structure, controls and interfaces.','text-emerald-300 bg-emerald-500/15 border-emerald-500/40'];if(score>=70)return['LEVEL 3: DOM-TRANSACTABLE','#06b6d4','Strong compatibility with limited agent friction.','text-cyan-300 bg-cyan-500/15 border-cyan-500/40'];if(score>=50)return['LEVEL 2: MACHINE-PARSEABLE','#eab308','Readable product data, but transaction friction remains.','text-yellow-300 bg-yellow-500/15 border-yellow-500/40'];if(score>=25)return['LEVEL 1: DISCOVERABLE ONLY','#f59e0b','Basic content is visible, but important machine signals are missing.','text-amber-300 bg-amber-500/15 border-amber-500/40'];return['LEVEL 0: INVISIBLE OR BLOCKED','#f43f5e','Critical rendering, access or semantic barriers were detected.','text-rose-300 bg-rose-500/15 border-rose-500/40'];}
+
+    function renderDashboard(report){
+      currentReport=report;const t=tier(report.overallScore);document.getElementById('results-dashboard').classList.remove('hidden');document.getElementById('overall-score-num').textContent=report.overallScore;const ring=document.getElementById('score-ring');ring.style.stroke=t[1];requestAnimationFrame(()=>ring.style.strokeDashoffset=326.72-(report.overallScore/100*326.72));const badge=document.getElementById('maturity-badge');badge.textContent=t[0];badge.className=`rounded-full border px-3 py-1 font-mono text-xs font-semibold ${t[3]}`;document.getElementById('scan-source-tag').textContent=report.sourceType;document.getElementById('analyzed-target-title').textContent=report.target;document.getElementById('maturity-summary-text').textContent=t[2];
+      document.getElementById('pillars-grid').innerHTML=report.pillars.map((p,i)=>`<article class="glass rounded-2xl p-5"><div class="mb-3 flex justify-between"><span class="font-mono text-xs text-slate-500">PILLAR 0${i+1}</span><strong class="font-mono text-sm ${p.score>=80?'text-emerald-400':p.score>=50?'text-cyan-400':'text-rose-400'}">${p.score}/100</strong></div><h3 class="mb-3 font-bold text-white">${escapeHtml(p.title)}</h3><div class="mb-4 h-2 overflow-hidden rounded-full bg-slate-900"><div class="h-full ${p.score>=80?'bg-emerald-400':p.score>=50?'bg-cyan-400':'bg-rose-400'}" style="width:${p.score}%"></div></div><ul class="space-y-2 border-t border-slate-800 pt-3">${p.checks.map(c=>`<li class="flex gap-2 text-xs text-slate-300"><span class="font-bold ${c.status==='pass'?'text-emerald-400':c.status==='warn'?'text-amber-400':'text-rose-400'}">${c.status==='pass'?'✓':c.status==='warn'?'!':'×'}</span><span>${escapeHtml(c.text)}</span></li>`).join('')}</ul></article>`).join('');filterRemediation('ALL');document.getElementById('results-dashboard').scrollIntoView({behavior:'smooth'});
+    }
+
+    function filterRemediation(severity){
+      if(!currentReport)return;document.querySelectorAll('.filter-btn').forEach(btn=>btn.className=`filter-btn rounded-lg border px-3 py-1.5 text-xs ${btn.dataset.filter===severity?'border-cyan-500/40 bg-cyan-500/20 text-cyan-300':'border-slate-800 bg-slate-900 text-slate-400'}`);const items=severity==='ALL'?currentReport.issues:currentReport.issues.filter(x=>x.severity===severity);const list=document.getElementById('remediation-list');if(!items.length){list.innerHTML='<div class="rounded-xl border border-emerald-500/25 bg-emerald-500/10 p-6 text-center text-sm font-semibold text-emerald-300">No matching blockers found.</div>';return;}list.innerHTML=items.map((x,i)=>`<article class="space-y-4 rounded-xl border border-slate-800 bg-slate-950/90 p-5"><div class="flex flex-wrap items-center gap-2"><span class="rounded border px-2.5 py-0.5 font-mono text-[11px] ${x.severity==='CRITICAL'?'border-rose-500/40 bg-rose-500/15 text-rose-300':x.severity==='HIGH'?'border-amber-500/40 bg-amber-500/15 text-amber-300':'border-cyan-500/40 bg-cyan-500/15 text-cyan-300'}">${x.severity}</span><span class="font-mono text-xs text-slate-400">${escapeHtml(x.pillar)}</span></div><div><h3 class="font-bold text-white">${escapeHtml(x.title)}</h3><p class="mt-1 text-xs leading-relaxed text-slate-400">${escapeHtml(x.impact)}</p></div><div class="grid gap-3 lg:grid-cols-2"><div><div class="mb-1 font-mono text-[11px] text-rose-400">Current pattern</div><pre class="code-scroll overflow-x-auto rounded-lg border border-rose-500/20 bg-slate-900 p-3 font-mono text-xs text-slate-400">${escapeHtml(x.before)}</pre></div><div><div class="mb-1 font-mono text-[11px] text-emerald-400">Recommended fix</div><pre id="fix-${i}" class="code-scroll overflow-x-auto rounded-lg border border-emerald-500/20 bg-slate-900 p-3 font-mono text-xs text-emerald-200">${escapeHtml(x.after)}</pre></div></div></article>`).join('');
+    }
+
+    function escapeHtml(value){return String(value??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');}
+    function showToast(message,type='info'){const el=document.createElement('div');el.className=`pointer-events-auto rounded-xl border bg-slate-900 px-4 py-3 text-xs font-medium shadow-xl ${type==='success'?'border-emerald-500/40 text-emerald-200':type==='warn'?'border-amber-500/40 text-amber-200':'border-cyan-500/40 text-cyan-200'}`;el.textContent=message;document.getElementById('toast-container').appendChild(el);setTimeout(()=>el.remove(),4000);}
+    async function copyText(text){try{await navigator.clipboard.writeText(text);}catch{const area=document.createElement('textarea');area.value=text;area.style.position='fixed';area.style.opacity='0';document.body.appendChild(area);area.select();document.execCommand('copy');area.remove();}}
+    function copyJsonSummary(){if(!currentReport)return;copyText(JSON.stringify(currentReport,null,2));showToast('JSON report copied.','success');}
+    function downloadMarkdownReport(){if(!currentReport)return;const t=tier(currentReport.overallScore);let md=`# AgentReady Audit Report\n\n- **Target:** ${currentReport.target}\n- **Mode:** ${currentReport.sourceType}\n- **Date:** ${new Date(currentReport.timestamp).toLocaleString()}\n- **Score:** ${currentReport.overallScore}/100 (${t[0]})\n\n`;currentReport.pillars.forEach((p,i)=>{md+=`## ${i+1}. ${p.title} - ${p.score}/100\n\n`;p.checks.forEach(c=>md+=`- [${c.status.toUpperCase()}] ${c.text}\n`);md+='\n';});if(currentReport.issues.length){md+='## Remediation roadmap\n\n';currentReport.issues.forEach((x,i)=>{md+=`### ${i+1}. [${x.severity}] ${x.title}\n\n${x.impact}\n\n\`\`\`html\n${x.after}\n\`\`\`\n\n`;});}const blob=new Blob([md],{type:'text/markdown;charset=utf-8'});const url=URL.createObjectURL(blob);const link=document.createElement('a');link.href=url;link.download=`agentready-audit-${Date.now()}.md`;link.click();URL.revokeObjectURL(url);showToast('Markdown report downloaded.','success');}
+  </script>
+</body>
+</html>
